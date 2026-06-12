@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FIFA World Cup 2026™ — โปรแกรมการแข่งขัน</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+  <style>
+    :root {
+      --wc-dark:  #080e1a;
+      --wc-navy:  #0f2044;
+      --wc-blue:  #1a3a6e;
+      --wc-red:   #c8102e;
+      --wc-gold:  #f0a500;
+      --wc-silver:#b0bec5;
+      --card-bg:  rgba(255,255,255,0.04);
+      --card-border: rgba(255,255,255,0.09);
+    }
+    * { box-sizing: border-box; }
+    body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--wc-dark); color: #e8ecf0; margin: 0; }
+
+    .navbar { background: linear-gradient(135deg,#050c1a,#0f2044); border-bottom: 2px solid var(--wc-gold); padding: 10px 0; position: sticky; top: 0; z-index: 1000; }
+    .navbar-brand { font-weight: 800; font-size: 1.1rem; color: #fff !important; letter-spacing: .5px; }
+    .navbar-brand span { color: var(--wc-gold); }
+    .nav-link { color: rgba(255,255,255,.7) !important; font-size: .9rem; }
+    .nav-link:hover { color: var(--wc-gold) !important; }
+
+    .hero { background: linear-gradient(160deg, #050c1a 0%, #0f2044 45%, #1a1040 100%); padding: 60px 0 50px; text-align: center; position: relative; overflow: hidden; }
+    .hero::before { content: '⚽'; font-size: 320px; position: absolute; right: -60px; top: -60px; opacity: .03; line-height: 1; }
+    .hero h1 { font-size: 2.6rem; font-weight: 900; letter-spacing: -1px; line-height: 1.15; }
+    .hero h1 .wc-title { color: var(--wc-gold); }
+    .hero .subtitle { color: var(--wc-silver); font-size: 1.05rem; margin-top: 8px; }
+    .hero .dates-badge { display: inline-block; background: var(--wc-red); color: #fff; padding: 6px 18px; border-radius: 20px; font-weight: 700; font-size: .9rem; margin-top: 16px; }
+
+    .stat-card { background: var(--card-bg); border: 1px solid rgba(240,165,0,.25); border-radius: 14px; padding: 22px 16px; text-align: center; }
+    .stat-num { font-size: 2.2rem; font-weight: 800; color: var(--wc-gold); line-height: 1; }
+    .stat-lbl { font-size: .8rem; color: var(--wc-silver); margin-top: 4px; text-transform: uppercase; letter-spacing: .8px; }
+
+    .tab-nav-wrap { background: rgba(255,255,255,.03); border-bottom: 1px solid var(--card-border); }
+    .nav-tabs { border: none; gap: 4px; padding: 8px 0; }
+    .nav-tabs .nav-link { color: rgba(255,255,255,.55); border: none; padding: 8px 20px; border-radius: 8px; font-size: .9rem; font-weight: 500; transition: all .2s; }
+    .nav-tabs .nav-link:hover { color: #fff; background: rgba(255,255,255,.06); }
+    .nav-tabs .nav-link.active { background: var(--wc-gold); color: #080e1a !important; font-weight: 700; }
+
+    .group-card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 14px; overflow: hidden; margin-bottom: 20px; }
+    .group-header { background: linear-gradient(135deg, var(--wc-blue), var(--wc-navy)); padding: 10px 16px; display: flex; align-items: center; gap: 10px; }
+    .group-letter { background: var(--wc-gold); color: #080e1a; font-weight: 900; font-size: 1rem; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+    .group-title { font-weight: 700; font-size: .95rem; }
+    .standings-table { width: 100%; border-collapse: collapse; font-size: .84rem; }
+    .standings-table th { padding: 6px 10px; color: var(--wc-silver); font-weight: 600; font-size: .75rem; text-transform: uppercase; letter-spacing: .5px; border-bottom: 1px solid var(--card-border); }
+    .standings-table td { padding: 7px 10px; border-bottom: 1px solid rgba(255,255,255,.04); vertical-align: middle; }
+    .standings-table tr:last-child td { border-bottom: none; }
+    .standings-table tr:hover td { background: rgba(255,255,255,.03); }
+    .pos-num { font-weight: 700; color: var(--wc-silver); width: 22px; }
+    .pos-1 .pos-num, .pos-2 .pos-num { color: #4caf50; }
+    .team-flag { font-size: 1.1rem; margin-right: 6px; }
+    .team-name-cell { font-weight: 600; }
+    .pts-cell { font-weight: 800; color: var(--wc-gold); text-align: center; }
+    td.center { text-align: center; }
+    .host-badge { font-size: .62rem; background: var(--wc-gold); color: #080e1a; padding: 1px 5px; border-radius: 6px; font-weight: 800; margin-left: 5px; vertical-align: middle; }
+
+    .day-block { margin-bottom: 28px; }
+    .day-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+    .day-date { background: var(--wc-red); color: #fff; padding: 5px 14px; border-radius: 20px; font-weight: 700; font-size: .82rem; white-space: nowrap; }
+    .day-line { flex: 1; height: 1px; background: var(--card-border); }
+
+    .match-card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 12px; padding: 14px 16px; margin-bottom: 10px; transition: border-color .2s; }
+    .match-card:hover { border-color: rgba(240,165,0,.4); }
+    .match-card.finished { border-left: 3px solid #4caf50; }
+    .match-card.today   { border-left: 3px solid var(--wc-gold); }
+    .match-card.upcoming { border-left: 3px solid #546e7a; }
+
+    .match-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+    .match-team { display: flex; align-items: center; gap: 7px; font-weight: 600; font-size: .9rem; flex: 1; }
+    .match-team.right { flex-direction: row-reverse; text-align: right; }
+    .match-score-box { min-width: 72px; text-align: center; background: rgba(0,0,0,.3); border-radius: 8px; padding: 4px 10px; }
+    .match-score { font-size: 1.25rem; font-weight: 800; color: var(--wc-gold); }
+    .match-vs { font-size: .75rem; color: var(--wc-silver); font-weight: 600; }
+    .match-time { font-size: .8rem; color: var(--wc-gold); font-weight: 700; }
+    .match-meta { margin-top: 8px; display: flex; gap: 14px; font-size: .75rem; color: rgba(255,255,255,.45); flex-wrap: wrap; }
+    .match-meta i { margin-right: 4px; }
+    .group-tag { font-size: .72rem; background: rgba(26,58,110,.6); color: #90caf9; padding: 2px 8px; border-radius: 10px; font-weight: 600; border: 1px solid rgba(144,202,249,.2); }
+
+    .bracket-wrap { overflow-x: auto; padding-bottom: 10px; }
+    .knockout-info { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 14px; padding: 20px; margin-bottom: 24px; }
+    .knockout-stage-badge { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: .78rem; font-weight: 700; margin-bottom: 8px; }
+
+    .venue-card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 12px; padding: 14px; margin-bottom: 12px; }
+    .venue-country { font-size: .72rem; text-transform: uppercase; letter-spacing: .8px; font-weight: 700; margin-bottom: 2px; }
+    .venue-name { font-weight: 700; font-size: .92rem; }
+    .venue-city { font-size: .8rem; color: var(--wc-silver); }
+    .flag-lg { font-size: 1.6rem; }
+
+    footer { background: #050c1a; border-top: 2px solid var(--wc-gold); padding: 24px 0; text-align: center; color: rgba(255,255,255,.4); font-size: .82rem; }
+    footer a { color: var(--wc-gold); text-decoration: none; }
+
+    @media (max-width: 576px) {
+      .hero h1 { font-size: 1.7rem; }
+    }
+  </style>
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg">
+  <div class="container">
+    <a class="navbar-brand" href="#">⚽ <span>FIFA</span> World Cup 2026™</a>
+    <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu">
+      <i class="fa fa-bars text-white"></i>
+    </button>
+    <div class="collapse navbar-collapse" id="navMenu">
+      <ul class="navbar-nav ms-auto gap-1">
+        <li class="nav-item"><a class="nav-link" href="#" onclick="switchTab('groups');return false;">กลุ่ม</a></li>
+        <li class="nav-item"><a class="nav-link" href="#" onclick="switchTab('schedule');return false;">โปรแกรม</a></li>
+        <li class="nav-item"><a class="nav-link" href="#" onclick="switchTab('knockout');return false;">รอบน็อคเอาท์</a></li>
+        <li class="nav-item"><a class="nav-link" href="#" onclick="switchTab('venues');return false;">สนาม</a></li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="container">
+    <h1>FIFA <span class="wc-title">WORLD CUP</span><br>2026™</h1>
+    <p class="subtitle">🇺🇸 United States &nbsp;·&nbsp; 🇨🇦 Canada &nbsp;·&nbsp; 🇲🇽 Mexico</p>
+    <div class="dates-badge">11 มิถุนายน — 19 กรกฎาคม 2569</div>
+    <div class="row g-3 mt-4 justify-content-center">
+      <div class="col-6 col-sm-3"><div class="stat-card"><div class="stat-num">48</div><div class="stat-lbl">ทีม</div></div></div>
+      <div class="col-6 col-sm-3"><div class="stat-card"><div class="stat-num">104</div><div class="stat-lbl">นัดการแข่งขัน</div></div></div>
+      <div class="col-6 col-sm-3"><div class="stat-card"><div class="stat-num">16</div><div class="stat-lbl">สนามแข่ง</div></div></div>
+      <div class="col-6 col-sm-3"><div class="stat-card"><div class="stat-num">3</div><div class="stat-lbl">ประเทศเจ้าภาพ</div></div></div>
+    </div>
+  </div>
+</section>
+
+<div class="tab-nav-wrap" style="position:sticky;top:54px;z-index:900;">
+  <div class="container">
+    <ul class="nav nav-tabs" id="mainTabs">
+      <li class="nav-item"><button class="nav-link active" onclick="switchTab('groups')"   id="tab-groups"><i class="fa fa-layer-group me-1"></i>กลุ่ม</button></li>
+      <li class="nav-item"><button class="nav-link"        onclick="switchTab('schedule')" id="tab-schedule"><i class="fa fa-calendar me-1"></i>โปรแกรม</button></li>
+      <li class="nav-item"><button class="nav-link"        onclick="switchTab('knockout')" id="tab-knockout"><i class="fa fa-trophy me-1"></i>รอบน็อคเอาท์</button></li>
+      <li class="nav-item"><button class="nav-link"        onclick="switchTab('venues')"   id="tab-venues"><i class="fa fa-map-marker-alt me-1"></i>สนาม</button></li>
+    </ul>
+  </div>
+</div>
+
+<div class="container py-4">
+
+<!-- ═══ GROUPS ═══ -->
+<div id="pane-groups">
+  <div class="d-flex align-items-center gap-3 mb-4 flex-wrap">
+    <span class="badge" style="background:#4caf50;padding:5px 12px;border-radius:12px;font-size:.8rem;">● รอบแบ่งกลุ่ม: 11 มิ.ย. – 27 มิ.ย. 2569</span>
+    <span style="font-size:.82rem;color:var(--wc-silver);">2 อันดับแรกแต่ละกลุ่ม + 8 ทีมอันดับ 3 ที่ดีที่สุด ผ่านเข้ารอบ 32</span>
+  </div>
+  <div class="row g-3">
+
+    <!-- GROUP A -->
+    <div class="col-md-6 col-lg-4">
+      <div class="group-card">
+        <div class="group-header"><div class="group-letter">A</div><div class="group-title">กลุ่ม A — ผล MD1 แล้ว</div></div>
+        <table class="standings-table">
+          <thead><tr><th>#</th><th>ทีม</th><th class="text-center">แข่ง</th><th class="text-center">W</th><th class="text-center">D</th><th class="text-center">L</th><th class="text-center">ต่าง</th><th class="text-center">แต้ม</th></tr></thead>
+          <tbody>
+            <tr class="pos-1"><td class="pos-num">1</td><td><span class="team-flag">🇲🇽</span><b>Mexico</b> <span class="host-badge">HOST</span></td><td class="center">1</td><td class="center">1</td><td class="center">0</td><td class="center">0</td><td class="center">+2</td><td class="pts-cell">3</td></tr>
+            <tr class="pos-2"><td class="pos-num">2</td><td><span class="team-flag">🇰🇷</span><b>South Korea</b></td><td class="center">1</td><td class="center">1</td><td class="center">0</td><td class="center">0</td><td class="center">+1</td><td class="pts-cell">3</td></tr>
+            <tr><td class="pos-num">3</td><td><span class="team-flag">🇨🇿</span>Czechia</td><td class="center">1</td><td class="center">0</td><td class="center">0</td><td class="center">1</td><td class="center">-1</td><td class="pts-cell">0</td></tr>
+            <tr><td class="pos-num">4</td><td><span class="team-flag">🇿🇦</span>South Africa</td><td class="center">1</td><td class="center">0</td><td class="center">0</td><td class="center">1</td><td class="center">-2</td><td class="pts-cell">0</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- GROUP B -->
+    <div class="col-md-6 col-lg-4">
+      <div class="group-card">
+        <div class="group-header"><div class="group-letter">B</div><div class="group-title">กลุ่ม B</div></div>
+        <table class="standings-table">
+          <thead><tr><th>#</th><th>ทีม</th><th class="text-center">แข่ง</th><th class="text-center">W</th><th class="text-center">D</th><th class="text-center">L</th><th class="text-center">ต่าง</th><th class="text-center">แต้ม</th></tr></thead>
+          <tbody>
+            <tr><td class="pos-num">-</td><td><span class="team-flag">🇨🇦</span>Canada <span class="host-badge">HOST</span></td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="pts-cell">0</td></tr>
+            <tr><td class="pos-num">-</td><td><span class="team-flag">🇧🇦</span>Bosnia &amp; Herz.</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="pts-cell">0</td></tr>
+            <tr><td class="pos-num">-</td><td><span class="team-flag">🇶🇦</span>Qatar</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="pts-cell">0</td></tr>
+            <tr><td class="pos-num">-</td><td><span class="team-flag">🇨🇭</span>Switzerland</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="pts-cell">0</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- GROUP C -->
+    <div class="col-md-6 col-lg-4">
+      <div class="group-card">
+        <div class="group-header"><div class="group-letter">C</div><div class="group-title">กลุ่ม C</div></div>
+        <table class="standings-table">
+          <thead><tr><th>#</th><th>ทีม</th><th class="text-center">แข่ง</th><th class="text-center">W</th><th class="text-center">D</th><th class="text-center">L</th><th class="text-center">ต่าง</th><th class="text-center">แต้ม</th></tr></thead>
+          <tbody>
+            <tr><td class="pos-num">-</td><td><span class="team-flag">🇧🇷</span>Brazil</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="pts-cell">0</td></tr>
+            <tr><td class="pos-num">-</td><td><span class="team-flag">🇲🇦</span>Morocco</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="pts-cell">0</td></tr>
+            <tr><td class="pos-num">-</td><td><span class="team-flag">🏴󠁧󠁢󠁳󠁣󠁴󠁿</span>Scotland</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="pts-cell">0</td></tr>
+            <tr><td class="pos-num">-</td><td><span class="team-flag">🇭🇹</span>Haiti</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="pts-cell">0</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- GROUP D -->
+    <div class="col-md-6 col-lg-4">
+      <div class="group-card">
+        <div class="group-header"><div class="group-letter">D</div><div class="group-title">กลุ่ม D</div></div>
+        <table class="standings-table">
+          <thead><tr><th>#</th><th>ทีม</th><th class="text-center">แข่ง</th><th class="text-center">W</th><th class="text-center">D</th><th class="text-center">L</th><th class="text-center">ต่าง</th><th class="text-center">แต้ม</th></tr></thead>
+          <tbody>
+            <tr><td class="pos-num">-</td><td><span class="team-flag">🇺🇸</span>USA <span class="host-badge">HOST</span></td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="pts-cell">0</td></tr>
+            <tr><td class="pos-num">-</td><td><span class="team-flag">🇵🇾</span>Paraguay</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="pts-cell">0</td></tr>
+            <tr><td class="pos-num">-</td><td><span class="team-flag">🇹🇷</span>Türkiye</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="pts-cell">0</td></tr>
+            <tr><td class="pos-num">-</td><td><span class="team-flag">🇦🇺</span>Australia</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="pts-cell">0</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- GROUP E -->
+    <div class="col-md-6 col-lg-4">
+      <div class="group-card">
+        <div class="group-header"><div class="group-letter">E</div><div class="group-title">กลุ่ม E</div></div>
+        <table class="standings-table">
+          <thead><tr><th>#</th><th>ทีม</th><th class="text-center">แข่ง</th><th class="text-center">W</th><th class="text-center">D</th><th class="text-center">L</th><th class="text-center">ต่าง</th><th class="text-center">แต้ม</th></tr></thead>
+          <tbody>
+            <tr><td class="pos-num">-</td><td><span class="team-flag">🇩🇪</span>Germany</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="pts-cell">0</td></tr>
+            <tr><td class="pos-num">-</td><td><span class="team-flag">🇪🇨</span>Ecuador</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="pts-cell">0</td></tr>
+            <tr><td class="pos-num">-</td><td><span class="team-flag">🇨🇮</span>Ivory Coast</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="pts-cell">0</td></tr>
+            <tr><td class="pos-num">-</td><td><span class="team-flag">🇨🇼</span>Curaçao</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="pts-cell">0</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- GROUP F -->
+    <div class="col-md-6 col-lg-4">
+      <div class="group-card">
+        <div class="group-header"><div class="group-letter">F</div><div class="group-title">กลุ่ม F</div></div>
+        <table class="standings-table">
+          <thead><tr><th>#</th><th>ทีม</th><th class="text-center">แข่ง</th><th class="text-center">W</th><th class="text-center">D</th><th class="text-center">L</th><th class="text-center">ต่าง</th><th class="text-center">แต้ม</th></tr></thead>
+          <tbody>
+            <tr><td class="pos-num">-</td><td><span class="team-flag">🇳🇱</span>Netherlands</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="pts-cell">0</td></tr>
+            <tr><td class="pos-num">-</td><td><span class="team-flag">🇯🇵</span>Japan</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="pts-cell">0</td></tr>
+            <tr><td class="pos-num">-</td><td><span class="team-flag">🇸🇪</span>Sweden</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="pts-cell">0</td></tr>
+            <tr><td class="pos-num">-</td><td><span class="team-flag">🇹🇳</span>Tunisia</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="pts-cell">0</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- GROUP G -->
+    <div class="col-md-6 col-lg-4">
+      <div class="group-card">
+        <div class="group-header"><div class="group-letter">G</div><div class="group-title">กลุ่ม G</div></div>
+        <table class="standings-table">
+          <thead><tr><th>#</th><th>ทีม</th><th class="text-center">แข่ง</th><th class="text-center">W</th><th class="text-center">D</th><th class="text-center">L</th><th class="text-center">ต่าง</th><th class="text-center">แต้ม</th></tr></thead>
+          <tbody>
+            <tr><td class="pos-num">-</td><td><span class="team-flag">🇧🇪</span>Belgium</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="pts-cell">0</td></tr>
+            <tr><td class="pos-num">-</td><td><span class="team-flag">🇳🇿</span>New Zealand</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="pts-cell">0</td></tr>
+            <tr><td class="pos-num">-</td><td><span class="team-flag">🇪🇬</span>Egypt</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="pts-cell">0</td></tr>
+            <tr><td class="pos-num">-</td><td><span class="team-flag">🇮🇷</span>Iran</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="pts-cell">0</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- GROUP H -->
+    <div class="col-md-6 col-lg-4">
+      <div class="group-card">
+        <div class="group-header"><div class="group-letter">H</div><div class="group-title">กลุ่ม H</div></div>
+        <table class="standings-table">
+          <thead><tr><th>#</th><th>ทีม</th><th class="text-center">แข่ง</th><th class="text-center">W</th><th class="text-center">D</th><th class="text-center">L</th><th class="text-center">ต่าง</th><th class="text-center">แต้ม</th></tr></thead>
+          <tbody>
+            <tr><td class="pos-num">-</td><td><span class="team-flag">🇪🇸</span>Spain</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="pts-cell">0</td></tr>
+            <tr><td class="pos-num">-</td><td><span class="team-flag">🇺🇾</span>Uruguay</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="pts-cell">0</td></tr>
+            <tr><td class="pos-num">-</td><td><span class="team-flag">🇸🇦</span>Saudi Arabia</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="pts-cell">0</td></tr>
+            <tr><td class="pos-num">-</td><td><span class="team-flag">🇨🇻</span>Cape Verde</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="pts-cell">0</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- GROUP I -->
+    <div class="col-md-6 col-lg-4">
+      <div class="group-card">
+        <div class="group-header"><div class="group-letter">I</div><div class="group-title">กลุ่ม I</div></div>
+        <table class="standings-table">
+          <thead><tr><th>#</th><th>ทีม</th><th class="text-center">แข่ง</th><th class="text-center">W</th><th class="text-center">D</th><th class="text-center">L</th><th class="text-center">ต่าง</th><th class="text-center">แต้ม</th></tr></thead>
+          <tbody>
+            <tr><td class="pos-num">-</td><td><span class="team-flag">🇫🇷</span>France</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="pts-cell">0</td></tr>
+            <tr><td class="pos-num">-</td><td><span class="team-flag">🇸🇳</span>Senegal</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="pts-cell">0</td></tr>
+            <tr><td class="pos-num">-</td><td><span class="team-flag">🇳🇴</span>Norway</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="pts-cell">0</td></tr>
+            <tr><td class="pos-num">-</td><td><span class="team-flag">🇮🇶</span>Iraq</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="pts-cell">0</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- GROUP J -->
+    <div class="col-md-6 col-lg-4">
+      <div class="group-card">
+        <div class="group-header"><div class="group-letter">J</div><div class="group-title">กลุ่ม J</div></div>
+        <table class="standings-table">
+          <thead><tr><th>#</th><th>ทีม</th><th class="text-center">แข่ง</th><th class="text-center">W</th><th class="text-center">D</th><th class="text-center">L</th><th class="text-center">ต่าง</th><th class="text-center">แต้ม</th></tr></thead>
+          <tbody>
+            <tr><td class="pos-num">-</td><td><span class="team-flag">🇦🇷</span>Argentina</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="pts-cell">0</td></tr>
+            <tr><td class="pos-num">-</td><td><span class="team-flag">🇩🇿</span>Algeria</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="pts-cell">0</td></tr>
+            <tr><td class="pos-num">-</td><td><span class="team-flag">🇦🇹</span>Austria</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="pts-cell">0</td></tr>
+            <tr><td class="pos-num">-</td><td><span class="team-flag">🇯🇴</span>Jordan</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="pts-cell">0</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- GROUP K -->
+    <div class="col-md-6 col-lg-4">
+      <div class="group-card">
+        <div class="group-header"><div class="group-letter">K</div><div class="group-title">กลุ่ม K</div></div>
+        <table class="standings-table">
+          <thead><tr><th>#</th><th>ทีม</th><th class="text-center">แข่ง</th><th class="text-center">W</th><th class="text-center">D</th><th class="text-center">L</th><th class="text-center">ต่าง</th><th class="text-center">แต้ม</th></tr></thead>
+          <tbody>
+            <tr><td class="pos-num">-</td><td><span class="team-flag">🇵🇹</span>Portugal</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="pts-cell">0</td></tr>
+            <tr><td class="pos-num">-</td><td><span class="team-flag">🇨🇴</span>Colombia</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="pts-cell">0</td></tr>
+            <tr><td class="pos-num">-</td><td><span class="team-flag">🇨🇩</span>DR Congo</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="pts-cell">0</td></tr>
+            <tr><td class="pos-num">-</td><td><span class="team-flag">🇺🇿</span>Uzbekistan</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="pts-cell">0</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- GROUP L -->
+    <div class="col-md-6 col-lg-4">
+      <div class="group-card">
+        <div class="group-header"><div class="group-letter">L</div><div class="group-title">กลุ่ม L</div></div>
+        <table class="standings-table">
+          <thead><tr><th>#</th><th>ทีม</th><th class="text-center">แข่ง</th><th class="text-center">W</th><th class="text-center">D</th><th class="text-center">L</th><th class="text-center">ต่าง</th><th class="text-center">แต้ม</th></tr></thead>
+          <tbody>
+            <tr><td class="pos-num">-</td><td><span class="team-flag">🏴󠁧󠁢󠁥󠁮󠁧󠁿</span>England</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="pts-cell">0</td></tr>
+            <tr><td class="pos-num">-</td><td><span class="team-flag">🇭🇷</span>Croatia</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="pts-cell">0</td></tr>
+            <tr><td class="pos-num">-</td><td><span class="team-flag">🇬🇭</span>Ghana</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="pts-cell">0</td></tr>
+            <tr><td class="pos-num">-</td><td><span class="team-flag">🇵🇦</span>Panama</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="pts-cell">0</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div><!-- /row -->
+  <p class="mt-2" style="font-size:.78rem;color:var(--wc-silver);">
+    <span style="color:#4caf50;">■</span> ผ่านเข้ารอบอัตโนมัติ (อันดับ 1–2) &nbsp;|&nbsp;
+    <span style="color:var(--wc-gold);">■</span> 8 ทีมอันดับ 3 ที่ดีที่สุดก็ผ่าน &nbsp;|&nbsp;
+    <span class="host-badge">HOST</span> ประเทศเจ้าภาพ
+  </p>
+</div><!-- /pane-groups -->
+
+
+<!-- ═══ SCHEDULE ═══ -->
+<div id="pane-schedule" style="display:none;">
+  <div class="d-flex align-items-center gap-3 mb-4 flex-wrap">
+    <span class="badge" style="background:#4caf50;padding:5px 12px;border-radius:12px;font-size:.8rem;">● รอบแบ่งกลุ่ม กำลังดำเนินการ</span>
+    <span style="font-size:.82rem;color:var(--wc-silver);">เวลาแสดงตามเขต CT (Central Time, UTC−5)</span>
+  </div>
+
+  <!-- June 11 -->
+  <div class="day-block">
+    <div class="day-header"><span class="day-date">พฤหัสบดี 11 มิ.ย. — นัดเปิดสนาม</span><div class="day-line"></div></div>
+    <div class="match-card finished">
+      <div class="match-top">
+        <div class="match-team"><span style="font-size:1.3rem;">🇲🇽</span><span>Mexico <span class="host-badge">HOST</span></span></div>
+        <div class="match-score-box"><div class="match-score">2 – 0</div><div class="match-vs">จบแล้ว</div></div>
+        <div class="match-team right"><span>South Africa</span><span style="font-size:1.3rem;">🇿🇦</span></div>
+      </div>
+      <div class="match-meta">
+        <span><i class="fa fa-map-marker-alt"></i>Estadio Azteca, Mexico City 🇲🇽</span>
+        <span class="group-tag">กลุ่ม A · MD1</span><span><i class="fa fa-clock"></i>15:00 CT</span>
+      </div>
+    </div>
+    <div class="match-card finished">
+      <div class="match-top">
+        <div class="match-team"><span style="font-size:1.3rem;">🇰🇷</span><span>South Korea</span></div>
+        <div class="match-score-box"><div class="match-score">2 – 1</div><div class="match-vs">จบแล้ว</div></div>
+        <div class="match-team right"><span>Czechia</span><span style="font-size:1.3rem;">🇨🇿</span></div>
+      </div>
+      <div class="match-meta">
+        <span><i class="fa fa-map-marker-alt"></i>SoFi Stadium, Los Angeles, CA 🇺🇸</span>
+        <span class="group-tag">กลุ่ม A · MD1</span><span><i class="fa fa-clock"></i>19:00 CT</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- June 12 -->
+  <div class="day-block">
+    <div class="day-header"><span class="day-date">ศุกร์ 12 มิ.ย. — วันนี้</span><div class="day-line"></div></div>
+    <div class="match-card today">
+      <div class="match-top">
+        <div class="match-team"><span style="font-size:1.3rem;">🇨🇦</span><span>Canada <span class="host-badge">HOST</span></span></div>
+        <div class="match-score-box"><div class="match-vs">vs</div><div class="match-time">14:00 CT</div></div>
+        <div class="match-team right"><span>Bosnia &amp; Herz.</span><span style="font-size:1.3rem;">🇧🇦</span></div>
+      </div>
+      <div class="match-meta"><span><i class="fa fa-map-marker-alt"></i>BMO Field, Toronto 🇨🇦</span><span class="group-tag">กลุ่ม B · MD1</span></div>
+    </div>
+    <div class="match-card today">
+      <div class="match-top">
+        <div class="match-team"><span style="font-size:1.3rem;">🇺🇸</span><span>USA <span class="host-badge">HOST</span></span></div>
+        <div class="match-score-box"><div class="match-vs">vs</div><div class="match-time">17:00 CT</div></div>
+        <div class="match-team right"><span>Paraguay</span><span style="font-size:1.3rem;">🇵🇾</span></div>
+      </div>
+      <div class="match-meta"><span><i class="fa fa-map-marker-alt"></i>MetLife Stadium, E. Rutherford, NJ 🇺🇸</span><span class="group-tag">กลุ่ม D · MD1</span></div>
+    </div>
+    <div class="match-card today">
+      <div class="match-top">
+        <div class="match-team"><span style="font-size:1.3rem;">🇶🇦</span><span>Qatar</span></div>
+        <div class="match-score-box"><div class="match-vs">vs</div><div class="match-time">20:00 CT</div></div>
+        <div class="match-team right"><span>Switzerland</span><span style="font-size:1.3rem;">🇨🇭</span></div>
+      </div>
+      <div class="match-meta"><span><i class="fa fa-map-marker-alt"></i>AT&amp;T Stadium, Arlington, TX 🇺🇸</span><span class="group-tag">กลุ่ม B · MD1</span></div>
+    </div>
+  </div>
+
+  <!-- June 13 -->
+  <div class="day-block">
+    <div class="day-header"><span class="day-date">เสาร์ 13 มิ.ย.</span><div class="day-line"></div></div>
+    <div class="match-card upcoming">
+      <div class="match-top">
+        <div class="match-team"><span style="font-size:1.3rem;">🇧🇷</span><span>Brazil</span></div>
+        <div class="match-score-box"><div class="match-vs">vs</div><div class="match-time">14:00 CT</div></div>
+        <div class="match-team right"><span>Morocco</span><span style="font-size:1.3rem;">🇲🇦</span></div>
+      </div>
+      <div class="match-meta"><span><i class="fa fa-map-marker-alt"></i>Hard Rock Stadium, Miami, FL 🇺🇸</span><span class="group-tag">กลุ่ม C · MD1</span></div>
+    </div>
+    <div class="match-card upcoming">
+      <div class="match-top">
+        <div class="match-team"><span style="font-size:1.3rem;">🇹🇷</span><span>Türkiye</span></div>
+        <div class="match-score-box"><div class="match-vs">vs</div><div class="match-time">17:00 CT</div></div>
+        <div class="match-team right"><span>Australia</span><span style="font-size:1.3rem;">🇦🇺</span></div>
+      </div>
+      <div class="match-meta"><span><i class="fa fa-map-marker-alt"></i>Arrowhead Stadium, Kansas City, MO 🇺🇸</span><span class="group-tag">กลุ่ม D · MD1</span></div>
+    </div>
+    <div class="match-card upcoming">
+      <div class="match-top">
+        <div class="match-team"><span style="font-size:1.3rem;">🇩🇪</span><span>Germany</span></div>
+        <div class="match-score-box"><div class="match-vs">vs</div><div class="match-time">20:00 CT</div></div>
+        <div class="match-team right"><span>Curaçao</span><span style="font-size:1.3rem;">🇨🇼</span></div>
+      </div>
+      <div class="match-meta"><span><i class="fa fa-map-marker-alt"></i>Levi's Stadium, San Jose, CA 🇺🇸</span><span class="group-tag">กลุ่ม E · MD1</span></div>
+    </div>
+  </div>
+
+  <!-- June 14 -->
+  <div class="day-block">
+    <div class="day-header"><span class="day-date">อาทิตย์ 14 มิ.ย.</span><div class="day-line"></div></div>
+    <div class="match-card upcoming">
+      <div class="match-top">
+        <div class="match-team"><span style="font-size:1.3rem;">🇭🇹</span><span>Haiti</span></div>
+        <div class="match-score-box"><div class="match-vs">vs</div><div class="match-time">14:00 CT</div></div>
+        <div class="match-team right"><span>Scotland</span><span style="font-size:1.3rem;">🏴󠁧󠁢󠁳󠁣󠁴󠁿</span></div>
+      </div>
+      <div class="match-meta"><span><i class="fa fa-map-marker-alt"></i>AT&amp;T Stadium, Arlington, TX 🇺🇸</span><span class="group-tag">กลุ่ม C · MD1</span></div>
+    </div>
+    <div class="match-card upcoming">
+      <div class="match-top">
+        <div class="match-team"><span style="font-size:1.3rem;">🇳🇱</span><span>Netherlands</span></div>
+        <div class="match-score-box"><div class="match-vs">vs</div><div class="match-time">17:00 CT</div></div>
+        <div class="match-team right"><span>Japan</span><span style="font-size:1.3rem;">🇯🇵</span></div>
+      </div>
+      <div class="match-meta"><span><i class="fa fa-map-marker-alt"></i>Lincoln Financial Field, Philadelphia, PA 🇺🇸</span><span class="group-tag">กลุ่ม F · MD1</span></div>
+    </div>
+    <div class="match-card upcoming">
+      <div class="match-top">
+        <div class="match-team"><span style="font-size:1.3rem;">🇨🇮</span><span>Ivory Coast</span></div>
+        <div class="match-score-box"><div class="match-vs">vs</div><div class="match-time">20:00 CT</div></div>
+        <div class="match-team right"><span>Ecuador</span><span style="font-size:1.3rem;">🇪🇨</span></div>
+      </div>
+      <div class="match-meta"><span><i class="fa fa-map-marker-alt"></i>Gillette Stadium, Boston, MA 🇺🇸</span><span class="group-tag">กลุ่ม E · MD1</span></div>
+    </div>
+  </div>
+
+  <!-- June 15 -->
+  <div class="day-block">
+    <div class="day-header"><span class="day-date">จันทร์ 15 มิ.ย.</span><div class="day-line"></div></div>
+    <div class="row g-2">
+      <div class="col-md-6"><div class="match-card upcoming"><div class="match-top"><div class="match-team"><span style="font-size:1.2rem;">🇧🇪</span><span>Belgium</span></div><div class="match-score-box"><div class="match-vs">vs</div><div class="match-time">14:00 CT</div></div><div class="match-team right"><span>Egypt</span><span style="font-size:1.2rem;">🇪🇬</span></div></div><div class="match-meta"><span><i class="fa fa-map-marker-alt"></i>Lumen Field, Seattle, WA 🇺🇸</span><span class="group-tag">กลุ่ม G · MD1</span></div></div></div>
+      <div class="col-md-6"><div class="match-card upcoming"><div class="match-top"><div class="match-team"><span style="font-size:1.2rem;">🇸🇪</span><span>Sweden</span></div><div class="match-score-box"><div class="match-vs">vs</div><div class="match-time">17:00 CT</div></div><div class="match-team right"><span>Tunisia</span><span style="font-size:1.2rem;">🇹🇳</span></div></div><div class="match-meta"><span><i class="fa fa-map-marker-alt"></i>Estadio BBVA, Monterrey 🇲🇽</span><span class="group-tag">กลุ่ม F · MD1</span></div></div></div>
+      <div class="col-md-6"><div class="match-card upcoming"><div class="match-top"><div class="match-team"><span style="font-size:1.2rem;">🇪🇸</span><span>Spain</span></div><div class="match-score-box"><div class="match-vs">vs</div><div class="match-time">20:00 CT</div></div><div class="match-team right"><span>Cape Verde</span><span style="font-size:1.2rem;">🇨🇻</span></div></div><div class="match-meta"><span><i class="fa fa-map-marker-alt"></i>Hard Rock Stadium, Miami, FL 🇺🇸</span><span class="group-tag">กลุ่ม H · MD1</span></div></div></div>
+    </div>
+  </div>
+
+  <!-- June 16 -->
+  <div class="day-block">
+    <div class="day-header"><span class="day-date">อังคาร 16 มิ.ย.</span><div class="day-line"></div></div>
+    <div class="row g-2">
+      <div class="col-md-6"><div class="match-card upcoming"><div class="match-top"><div class="match-team"><span style="font-size:1.2rem;">🇮🇷</span><span>Iran</span></div><div class="match-score-box"><div class="match-vs">vs</div><div class="match-time">14:00 CT</div></div><div class="match-team right"><span>New Zealand</span><span style="font-size:1.2rem;">🇳🇿</span></div></div><div class="match-meta"><span><i class="fa fa-map-marker-alt"></i>Estadio Akron, Guadalajara 🇲🇽</span><span class="group-tag">กลุ่ม G · MD1</span></div></div></div>
+      <div class="col-md-6"><div class="match-card upcoming"><div class="match-top"><div class="match-team"><span style="font-size:1.2rem;">🇺🇾</span><span>Uruguay</span></div><div class="match-score-box"><div class="match-vs">vs</div><div class="match-time">17:00 CT</div></div><div class="match-team right"><span>Saudi Arabia</span><span style="font-size:1.2rem;">🇸🇦</span></div></div><div class="match-meta"><span><i class="fa fa-map-marker-alt"></i>AT&amp;T Stadium, Arlington, TX 🇺🇸</span><span class="group-tag">กลุ่ม H · MD1</span></div></div></div>
+      <div class="col-md-6"><div class="match-card upcoming"><div class="match-top"><div class="match-team"><span style="font-size:1.2rem;">🇫🇷</span><span>France</span></div><div class="match-score-box"><div class="match-vs">vs</div><div class="match-time">20:00 CT</div></div><div class="match-team right"><span>Senegal</span><span style="font-size:1.2rem;">🇸🇳</span></div></div><div class="match-meta"><span><i class="fa fa-map-marker-alt"></i>MetLife Stadium, E. Rutherford, NJ 🇺🇸</span><span class="group-tag">กลุ่ม I · MD1</span></div></div></div>
+    </div>
+  </div>
+
+  <!-- June 17 -->
+  <div class="day-block">
+    <div class="day-header"><span class="day-date">พุธ 17 มิ.ย.</span><div class="day-line"></div></div>
+    <div class="row g-2">
+      <div class="col-md-6"><div class="match-card upcoming"><div class="match-top"><div class="match-team"><span style="font-size:1.2rem;">🏴󠁧󠁢󠁥󠁮󠁧󠁿</span><span>England</span></div><div class="match-score-box"><div class="match-vs">vs</div><div class="match-time">15:00 CT</div></div><div class="match-team right"><span>Croatia</span><span style="font-size:1.2rem;">🇭🇷</span></div></div><div class="match-meta"><span><i class="fa fa-map-marker-alt"></i>Gillette Stadium, Boston, MA 🇺🇸</span><span class="group-tag">กลุ่ม L · MD1</span></div></div></div>
+      <div class="col-md-6"><div class="match-card upcoming"><div class="match-top"><div class="match-team"><span style="font-size:1.2rem;">🇬🇭</span><span>Ghana</span></div><div class="match-score-box"><div class="match-vs">vs</div><div class="match-time">20:00 CT</div></div><div class="match-team right"><span>Panama</span><span style="font-size:1.2rem;">🇵🇦</span></div></div><div class="match-meta"><span><i class="fa fa-map-marker-alt"></i>Lincoln Financial Field, Philadelphia 🇺🇸</span><span class="group-tag">กลุ่ม L · MD1</span></div></div></div>
+      <div class="col-md-6"><div class="match-card upcoming"><div class="match-top"><div class="match-team"><span style="font-size:1.2rem;">🇦🇷</span><span>Argentina</span></div><div class="match-score-box"><div class="match-vs">vs</div><div class="match-time">17:00 CT</div></div><div class="match-team right"><span>Algeria</span><span style="font-size:1.2rem;">🇩🇿</span></div></div><div class="match-meta"><span><i class="fa fa-map-marker-alt"></i>Levi's Stadium, San Jose, CA 🇺🇸</span><span class="group-tag">กลุ่ม J · MD1</span></div></div></div>
+      <div class="col-md-6"><div class="match-card upcoming"><div class="match-top"><div class="match-team"><span style="font-size:1.2rem;">🇳🇴</span><span>Norway</span></div><div class="match-score-box"><div class="match-vs">vs</div><div class="match-time">14:00 CT</div></div><div class="match-team right"><span>Iraq</span><span style="font-size:1.2rem;">🇮🇶</span></div></div><div class="match-meta"><span><i class="fa fa-map-marker-alt"></i>Arrowhead Stadium, Kansas City 🇺🇸</span><span class="group-tag">กลุ่ม I · MD1</span></div></div></div>
+    </div>
+  </div>
+
+  <!-- June 18 -->
+  <div class="day-block">
+    <div class="day-header"><span class="day-date">พฤหัสบดี 18 มิ.ย.</span><div class="day-line"></div></div>
+    <div class="row g-2">
+      <div class="col-md-6"><div class="match-card upcoming"><div class="match-top"><div class="match-team"><span style="font-size:1.2rem;">🇦🇹</span><span>Austria</span></div><div class="match-score-box"><div class="match-vs">vs</div><div class="match-time">14:00 CT</div></div><div class="match-team right"><span>Jordan</span><span style="font-size:1.2rem;">🇯🇴</span></div></div><div class="match-meta"><span class="group-tag">กลุ่ม J · MD1</span></div></div></div>
+      <div class="col-md-6"><div class="match-card upcoming"><div class="match-top"><div class="match-team"><span style="font-size:1.2rem;">🇵🇹</span><span>Portugal</span></div><div class="match-score-box"><div class="match-vs">vs</div><div class="match-time">17:00 CT</div></div><div class="match-team right"><span>Colombia</span><span style="font-size:1.2rem;">🇨🇴</span></div></div><div class="match-meta"><span class="group-tag">กลุ่ม K · MD1</span></div></div></div>
+      <div class="col-md-6"><div class="match-card upcoming"><div class="match-top"><div class="match-team"><span style="font-size:1.2rem;">🇺🇿</span><span>Uzbekistan</span></div><div class="match-score-box"><div class="match-vs">vs</div><div class="match-time">20:00 CT</div></div><div class="match-team right"><span>DR Congo</span><span style="font-size:1.2rem;">🇨🇩</span></div></div><div class="match-meta"><span class="group-tag">กลุ่ม K · MD1</span></div></div></div>
+    </div>
+  </div>
+
+  <!-- MD2: June 19-24 summary rows -->
+  <div class="day-block">
+    <div class="day-header"><span class="day-date">19–24 มิ.ย. — นัดที่ 2 (MD2)</span><div class="day-line"></div></div>
+    <div class="row g-2">
+      <div class="col-md-6"><div class="match-card upcoming"><div class="match-top"><div class="match-team"><span style="font-size:1.2rem;">🇲🇽</span><span>Mexico</span></div><div class="match-score-box"><div class="match-vs">vs</div><div class="match-time">19 มิ.ย.</div></div><div class="match-team right"><span>South Korea</span><span style="font-size:1.2rem;">🇰🇷</span></div></div><div class="match-meta"><span class="group-tag">กลุ่ม A · MD2</span></div></div></div>
+      <div class="col-md-6"><div class="match-card upcoming"><div class="match-top"><div class="match-team"><span style="font-size:1.2rem;">🇿🇦</span><span>South Africa</span></div><div class="match-score-box"><div class="match-vs">vs</div><div class="match-time">19 มิ.ย.</div></div><div class="match-team right"><span>Czechia</span><span style="font-size:1.2rem;">🇨🇿</span></div></div><div class="match-meta"><span class="group-tag">กลุ่ม A · MD2</span></div></div></div>
+      <div class="col-md-6"><div class="match-card upcoming"><div class="match-top"><div class="match-team"><span style="font-size:1.2rem;">🇲🇦</span><span>Morocco</span></div><div class="match-score-box"><div class="match-vs">vs</div><div class="match-time">19 มิ.ย.</div></div><div class="match-team right"><span>Scotland</span><span style="font-size:1.2rem;">🏴󠁧󠁢󠁳󠁣󠁴󠁿</span></div></div><div class="match-meta"><span class="group-tag">กลุ่ม C · MD2</span></div></div></div>
+      <div class="col-md-6"><div class="match-card upcoming"><div class="match-top"><div class="match-team"><span style="font-size:1.2rem;">🇺🇸</span><span>USA</span></div><div class="match-score-box"><div class="match-vs">vs</div><div class="match-time">21 มิ.ย.</div></div><div class="match-team right"><span>Australia</span><span style="font-size:1.2rem;">🇦🇺</span></div></div><div class="match-meta"><span class="group-tag">กลุ่ม D · MD2</span></div></div></div>
+      <div class="col-md-6"><div class="match-card upcoming"><div class="match-top"><div class="match-team"><span style="font-size:1.2rem;">🇩🇪</span><span>Germany</span></div><div class="match-score-box"><div class="match-vs">vs</div><div class="match-time">21 มิ.ย.</div></div><div class="match-team right"><span>Ecuador</span><span style="font-size:1.2rem;">🇪🇨</span></div></div><div class="match-meta"><span class="group-tag">กลุ่ม E · MD2</span></div></div></div>
+      <div class="col-md-6"><div class="match-card upcoming"><div class="match-top"><div class="match-team"><span style="font-size:1.2rem;">🇪🇸</span><span>Spain</span></div><div class="match-score-box"><div class="match-vs">vs</div><div class="match-time">22 มิ.ย.</div></div><div class="match-team right"><span>Uruguay</span><span style="font-size:1.2rem;">🇺🇾</span></div></div><div class="match-meta"><span class="group-tag">กลุ่ม H · MD2</span></div></div></div>
+      <div class="col-md-6"><div class="match-card upcoming"><div class="match-top"><div class="match-team"><span style="font-size:1.2rem;">🇫🇷</span><span>France</span></div><div class="match-score-box"><div class="match-vs">vs</div><div class="match-time">22 มิ.ย.</div></div><div class="match-team right"><span>Norway</span><span style="font-size:1.2rem;">🇳🇴</span></div></div><div class="match-meta"><span class="group-tag">กลุ่ม I · MD2</span></div></div></div>
+      <div class="col-md-6"><div class="match-card upcoming"><div class="match-top"><div class="match-team"><span style="font-size:1.2rem;">🏴󠁧󠁢󠁥󠁮󠁧󠁿</span><span>England</span></div><div class="match-score-box"><div class="match-vs">vs</div><div class="match-time">23 มิ.ย.</div></div><div class="match-team right"><span>Ghana</span><span style="font-size:1.2rem;">🇬🇭</span></div></div><div class="match-meta"><span><i class="fa fa-map-marker-alt"></i>SoFi Stadium, LA 🇺🇸</span><span class="group-tag">กลุ่ม L · MD2</span></div></div></div>
+      <div class="col-md-6"><div class="match-card upcoming"><div class="match-top"><div class="match-team"><span style="font-size:1.2rem;">🇦🇷</span><span>Argentina</span></div><div class="match-score-box"><div class="match-vs">vs</div><div class="match-time">23 มิ.ย.</div></div><div class="match-team right"><span>Austria</span><span style="font-size:1.2rem;">🇦🇹</span></div></div><div class="match-meta"><span class="group-tag">กลุ่ม J · MD2</span></div></div></div>
+    </div>
+  </div>
+
+  <!-- MD3: June 24-27 -->
+  <div class="day-block">
+    <div class="day-header"><span class="day-date">24–27 มิ.ย. — นัดที่ 3 (MD3) ทุกคู่เตะพร้อมกัน</span><div class="day-line"></div></div>
+    <div class="row g-2">
+      <div class="col-md-6"><div class="match-card upcoming"><div class="match-top"><div class="match-team"><span style="font-size:1.2rem;">🇧🇷</span><span>Brazil</span></div><div class="match-score-box"><div class="match-vs">vs</div><div class="match-time">24 มิ.ย.</div></div><div class="match-team right"><span>Scotland</span><span style="font-size:1.2rem;">🏴󠁧󠁢󠁳󠁣󠁴󠁿</span></div></div><div class="match-meta"><span class="group-tag">กลุ่ม C · MD3</span></div></div></div>
+      <div class="col-md-6"><div class="match-card upcoming"><div class="match-top"><div class="match-team"><span style="font-size:1.2rem;">🇲🇦</span><span>Morocco</span></div><div class="match-score-box"><div class="match-vs">vs</div><div class="match-time">24 มิ.ย.</div></div><div class="match-team right"><span>Haiti</span><span style="font-size:1.2rem;">🇭🇹</span></div></div><div class="match-meta"><span class="group-tag">กลุ่ม C · MD3</span></div></div></div>
+      <div class="col-md-6"><div class="match-card upcoming"><div class="match-top"><div class="match-team"><span style="font-size:1.2rem;">🇲🇽</span><span>Mexico</span></div><div class="match-score-box"><div class="match-vs">vs</div><div class="match-time">25 มิ.ย.</div></div><div class="match-team right"><span>Czechia</span><span style="font-size:1.2rem;">🇨🇿</span></div></div><div class="match-meta"><span class="group-tag">กลุ่ม A · MD3</span></div></div></div>
+      <div class="col-md-6"><div class="match-card upcoming"><div class="match-top"><div class="match-team"><span style="font-size:1.2rem;">🇰🇷</span><span>South Korea</span></div><div class="match-score-box"><div class="match-vs">vs</div><div class="match-time">25 มิ.ย.</div></div><div class="match-team right"><span>South Africa</span><span style="font-size:1.2rem;">🇿🇦</span></div></div><div class="match-meta"><span class="group-tag">กลุ่ม A · MD3</span></div></div></div>
+      <div class="col-md-6"><div class="match-card upcoming"><div class="match-top"><div class="match-team"><span style="font-size:1.2rem;">🇩🇪</span><span>Germany</span></div><div class="match-score-box"><div class="match-vs">vs</div><div class="match-time">26 มิ.ย.</div></div><div class="match-team right"><span>Ivory Coast</span><span style="font-size:1.2rem;">🇨🇮</span></div></div><div class="match-meta"><span class="group-tag">กลุ่ม E · MD3</span></div></div></div>
+      <div class="col-md-6"><div class="match-card upcoming"><div class="match-top"><div class="match-team"><span style="font-size:1.2rem;">🇪🇸</span><span>Spain</span></div><div class="match-score-box"><div class="match-vs">vs</div><div class="match-time">26 มิ.ย.</div></div><div class="match-team right"><span>Saudi Arabia</span><span style="font-size:1.2rem;">🇸🇦</span></div></div><div class="match-meta"><span class="group-tag">กลุ่ม H · MD3</span></div></div></div>
+      <div class="col-md-6"><div class="match-card upcoming"><div class="match-top"><div class="match-team"><span style="font-size:1.2rem;">🏴󠁧󠁢󠁥󠁮󠁧󠁿</span><span>England</span></div><div class="match-score-box"><div class="match-vs">vs</div><div class="match-time">27 มิ.ย.</div></div><div class="match-team right"><span>Panama</span><span style="font-size:1.2rem;">🇵🇦</span></div></div><div class="match-meta"><span class="group-tag">กลุ่ม L · MD3</span></div></div></div>
+      <div class="col-md-6"><div class="match-card upcoming"><div class="match-top"><div class="match-team"><span style="font-size:1.2rem;">🇭🇷</span><span>Croatia</span></div><div class="match-score-box"><div class="match-vs">vs</div><div class="match-time">27 มิ.ย.</div></div><div class="match-team right"><span>Ghana</span><span style="font-size:1.2rem;">🇬🇭</span></div></div><div class="match-meta"><span class="group-tag">กลุ่ม L · MD3</span></div></div></div>
+      <div class="col-md-6"><div class="match-card upcoming"><div class="match-top"><div class="match-team"><span style="font-size:1.2rem;">🇦🇷</span><span>Argentina</span></div><div class="match-score-box"><div class="match-vs">vs</div><div class="match-time">27 มิ.ย.</div></div><div class="match-team right"><span>Jordan</span><span style="font-size:1.2rem;">🇯🇴</span></div></div><div class="match-meta"><span class="group-tag">กลุ่ม J · MD3</span></div></div></div>
+      <div class="col-md-6"><div class="match-card upcoming"><div class="match-top"><div class="match-team"><span style="font-size:1.2rem;">🇵🇹</span><span>Portugal</span></div><div class="match-score-box"><div class="match-vs">vs</div><div class="match-time">27 มิ.ย.</div></div><div class="match-team right"><span>DR Congo</span><span style="font-size:1.2rem;">🇨🇩</span></div></div><div class="match-meta"><span class="group-tag">กลุ่ม K · MD3</span></div></div></div>
+    </div>
+  </div>
+
+</div><!-- /pane-schedule -->
+
+
+<!-- ═══ KNOCKOUT ═══ -->
+<div id="pane-knockout" style="display:none;">
+
+  <div class="row g-3 mb-4">
+    <div class="col-sm-6 col-lg-3">
+      <div class="knockout-info">
+        <div class="knockout-stage-badge" style="background:rgba(76,175,80,.15);color:#4caf50;border:1px solid #4caf50;">รอบ 32 ทีม</div>
+        <div style="font-size:.83rem;color:var(--wc-silver);">28 มิ.ย. – 4 ก.ค. 2569 · 16 คู่</div>
+      </div>
+    </div>
+    <div class="col-sm-6 col-lg-3">
+      <div class="knockout-info">
+        <div class="knockout-stage-badge" style="background:rgba(33,150,243,.15);color:#2196f3;border:1px solid #2196f3;">รอบ 16 ทีม</div>
+        <div style="font-size:.83rem;color:var(--wc-silver);">5 – 9 ก.ค. 2569 · 8 คู่</div>
+      </div>
+    </div>
+    <div class="col-sm-6 col-lg-3">
+      <div class="knockout-info">
+        <div class="knockout-stage-badge" style="background:rgba(240,165,0,.15);color:var(--wc-gold);border:1px solid var(--wc-gold);">รอบ 8 ทีม (QF)</div>
+        <div style="font-size:.83rem;color:var(--wc-silver);">11 – 12 ก.ค. 2569 · 4 คู่</div>
+      </div>
+    </div>
+    <div class="col-sm-6 col-lg-3">
+      <div class="knockout-info">
+        <div class="knockout-stage-badge" style="background:rgba(200,16,46,.2);color:#ef5350;border:1px solid #ef5350;">รอบรองชนะเลิศ</div>
+        <div style="font-size:.83rem;color:var(--wc-silver);">15 – 16 ก.ค. 2569 · 2 คู่</div>
+      </div>
+    </div>
+  </div>
+
+  <div style="background:linear-gradient(135deg,rgba(240,165,0,.1),rgba(200,16,46,.07));border:1px solid rgba(240,165,0,.35);border-radius:16px;padding:28px;text-align:center;margin-bottom:28px;">
+    <div style="font-size:.8rem;color:var(--wc-gold);text-transform:uppercase;letter-spacing:2px;font-weight:700;">🏆 รอบชิงชนะเลิศ</div>
+    <div style="font-size:2.2rem;font-weight:900;margin:8px 0;">19 กรกฎาคม 2569</div>
+    <div style="color:var(--wc-silver);"><i class="fa fa-map-marker-alt me-1"></i>MetLife Stadium, East Rutherford, New Jersey, USA</div>
+    <div style="margin-top:6px;font-size:.85rem;color:rgba(255,255,255,.4);">ความจุ 82,500 ที่นั่ง</div>
+    <div style="margin-top:16px;font-size:3rem;">🏆</div>
+    <div style="margin-top:12px;color:rgba(255,255,255,.35);font-size:.85rem;">ผู้ชนะยังไม่ทราบ — รอผลรอบแบ่งกลุ่ม</div>
+  </div>
+
+  <!-- Knockout schedule timeline -->
+  <div class="row g-3">
+    <div class="col-12"><h6 style="color:var(--wc-gold);margin-bottom:12px;"><i class="fa fa-calendar me-2"></i>ตารางรอบน็อคเอาท์</h6></div>
+    <div class="col-md-4">
+      <div class="group-card">
+        <div class="group-header"><div class="group-title">รอบ 32 ทีม &nbsp;<span style="color:rgba(255,255,255,.5);font-weight:400;font-size:.8rem;">28 มิ.ย. – 4 ก.ค.</span></div></div>
+        <div style="padding:12px;font-size:.83rem;color:var(--wc-silver);">
+          <div style="padding:5px 0;border-bottom:1px solid var(--card-border);">28 มิ.ย. — คู่ที่ 1 &amp; 2</div>
+          <div style="padding:5px 0;border-bottom:1px solid var(--card-border);">29 มิ.ย. — คู่ที่ 3 &amp; 4</div>
+          <div style="padding:5px 0;border-bottom:1px solid var(--card-border);">30 มิ.ย. — คู่ที่ 5 &amp; 6</div>
+          <div style="padding:5px 0;border-bottom:1px solid var(--card-border);">1 ก.ค. — คู่ที่ 7 &amp; 8</div>
+          <div style="padding:5px 0;border-bottom:1px solid var(--card-border);">2 ก.ค. — คู่ที่ 9 &amp; 10</div>
+          <div style="padding:5px 0;border-bottom:1px solid var(--card-border);">3 ก.ค. — คู่ที่ 11 &amp; 12</div>
+          <div style="padding:5px 0;">4 ก.ค. — คู่ที่ 13–16</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="group-card">
+        <div class="group-header"><div class="group-title">รอบ 16 ทีม &nbsp;<span style="color:rgba(255,255,255,.5);font-weight:400;font-size:.8rem;">5 – 9 ก.ค.</span></div></div>
+        <div style="padding:12px;font-size:.83rem;color:var(--wc-silver);">
+          <div style="padding:5px 0;border-bottom:1px solid var(--card-border);">5 ก.ค. — คู่ที่ 1 &amp; 2</div>
+          <div style="padding:5px 0;border-bottom:1px solid var(--card-border);">6 ก.ค. — คู่ที่ 3 &amp; 4</div>
+          <div style="padding:5px 0;border-bottom:1px solid var(--card-border);">7 ก.ค. — คู่ที่ 5 &amp; 6</div>
+          <div style="padding:5px 0;">8–9 ก.ค. — คู่ที่ 7 &amp; 8</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="group-card">
+        <div class="group-header"><div class="group-title">รอบ QF → Final</div></div>
+        <div style="padding:12px;font-size:.83rem;color:var(--wc-silver);">
+          <div style="padding:5px 0;border-bottom:1px solid var(--card-border);">11–12 ก.ค. — รอบก่อนรองชนะเลิศ (4 คู่)</div>
+          <div style="padding:5px 0;border-bottom:1px solid var(--card-border);">15–16 ก.ค. — รอบรองชนะเลิศ (2 คู่)</div>
+          <div style="padding:5px 0;border-bottom:1px solid var(--card-border);">18 ก.ค. — ชิงอันดับ 3</div>
+          <div style="padding:5px 0;color:var(--wc-gold);font-weight:700;">19 ก.ค. — 🏆 รอบชิงชนะเลิศ</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /pane-knockout -->
+
+
+<!-- ═══ VENUES ═══ -->
+<div id="pane-venues" style="display:none;">
+  <p style="color:var(--wc-silver);font-size:.88rem;margin-bottom:20px;">16 สนามแข่งขันใน 3 ประเทศเจ้าภาพ</p>
+  <div class="row g-3">
+
+    <div class="col-12"><h6 style="color:var(--wc-gold);border-bottom:1px solid var(--card-border);padding-bottom:8px;"><span style="font-size:1.4rem;">🇺🇸</span> United States — 11 สนาม</h6></div>
+    <div class="col-md-6 col-lg-4"><div class="venue-card"><div class="venue-country" style="color:#3f80ea;">USA</div><div class="venue-name">MetLife Stadium ⭐ รอบชิง</div><div class="venue-city">East Rutherford, New Jersey · 82,500 ที่นั่ง</div></div></div>
+    <div class="col-md-6 col-lg-4"><div class="venue-card"><div class="venue-country" style="color:#3f80ea;">USA</div><div class="venue-name">AT&amp;T Stadium</div><div class="venue-city">Arlington (Dallas), Texas · 80,000 ที่นั่ง</div></div></div>
+    <div class="col-md-6 col-lg-4"><div class="venue-card"><div class="venue-country" style="color:#3f80ea;">USA</div><div class="venue-name">SoFi Stadium</div><div class="venue-city">Inglewood (Los Angeles), California · 70,240 ที่นั่ง</div></div></div>
+    <div class="col-md-6 col-lg-4"><div class="venue-card"><div class="venue-country" style="color:#3f80ea;">USA</div><div class="venue-name">Levi's Stadium</div><div class="venue-city">Santa Clara (San Francisco Bay Area), CA · 68,500 ที่นั่ง</div></div></div>
+    <div class="col-md-6 col-lg-4"><div class="venue-card"><div class="venue-country" style="color:#3f80ea;">USA</div><div class="venue-name">Hard Rock Stadium</div><div class="venue-city">Miami Gardens, Florida · 65,000 ที่นั่ง</div></div></div>
+    <div class="col-md-6 col-lg-4"><div class="venue-card"><div class="venue-country" style="color:#3f80ea;">USA</div><div class="venue-name">Lincoln Financial Field</div><div class="venue-city">Philadelphia, Pennsylvania · 69,800 ที่นั่ง</div></div></div>
+    <div class="col-md-6 col-lg-4"><div class="venue-card"><div class="venue-country" style="color:#3f80ea;">USA</div><div class="venue-name">Arrowhead Stadium</div><div class="venue-city">Kansas City, Missouri · 76,416 ที่นั่ง</div></div></div>
+    <div class="col-md-6 col-lg-4"><div class="venue-card"><div class="venue-country" style="color:#3f80ea;">USA</div><div class="venue-name">Gillette Stadium</div><div class="venue-city">Foxborough (Boston), Massachusetts · 65,878 ที่นั่ง</div></div></div>
+    <div class="col-md-6 col-lg-4"><div class="venue-card"><div class="venue-country" style="color:#3f80ea;">USA</div><div class="venue-name">Lumen Field</div><div class="venue-city">Seattle, Washington · 69,000 ที่นั่ง</div></div></div>
+    <div class="col-md-6 col-lg-4"><div class="venue-card"><div class="venue-country" style="color:#3f80ea;">USA</div><div class="venue-name">Mercedes-Benz Stadium</div><div class="venue-city">Atlanta, Georgia · 71,000 ที่นั่ง</div></div></div>
+    <div class="col-md-6 col-lg-4"><div class="venue-card"><div class="venue-country" style="color:#3f80ea;">USA</div><div class="venue-name">NRG Stadium</div><div class="venue-city">Houston, Texas · 72,220 ที่นั่ง</div></div></div>
+
+    <div class="col-12 mt-2"><h6 style="color:var(--wc-gold);border-bottom:1px solid var(--card-border);padding-bottom:8px;"><span style="font-size:1.4rem;">🇲🇽</span> Mexico — 3 สนาม</h6></div>
+    <div class="col-md-6 col-lg-4"><div class="venue-card"><div class="venue-country" style="color:#4caf50;">MEX</div><div class="venue-name">Estadio Azteca ⭐ นัดเปิด</div><div class="venue-city">Mexico City · 87,523 ที่นั่ง (ใหญ่สุดในทัวร์นาเมนต์)</div></div></div>
+    <div class="col-md-6 col-lg-4"><div class="venue-card"><div class="venue-country" style="color:#4caf50;">MEX</div><div class="venue-name">Estadio BBVA</div><div class="venue-city">Monterrey, Nuevo León · 53,500 ที่นั่ง</div></div></div>
+    <div class="col-md-6 col-lg-4"><div class="venue-card"><div class="venue-country" style="color:#4caf50;">MEX</div><div class="venue-name">Estadio Akron</div><div class="venue-city">Guadalajara, Jalisco · 49,850 ที่นั่ง</div></div></div>
+
+    <div class="col-12 mt-2"><h6 style="color:var(--wc-gold);border-bottom:1px solid var(--card-border);padding-bottom:8px;"><span style="font-size:1.4rem;">🇨🇦</span> Canada — 2 สนาม</h6></div>
+    <div class="col-md-6 col-lg-4"><div class="venue-card"><div class="venue-country" style="color:#ef5350;">CAN</div><div class="venue-name">BMO Field</div><div class="venue-city">Toronto, Ontario · 45,000 ที่นั่ง</div></div></div>
+    <div class="col-md-6 col-lg-4"><div class="venue-card"><div class="venue-country" style="color:#ef5350;">CAN</div><div class="venue-name">BC Place</div><div class="venue-city">Vancouver, British Columbia · 54,500 ที่นั่ง</div></div></div>
+
+  </div>
+</div><!-- /pane-venues -->
+
+</div><!-- /container -->
+
+<footer>
+  <div class="container">
+    <p style="margin:0 0 6px;font-size:1rem;font-weight:700;color:rgba(255,255,255,.8);">⚽ FIFA World Cup 2026™</p>
+    <p style="margin:0 0 4px;">11 มิถุนายน – 19 กรกฎาคม 2569 &nbsp;|&nbsp; USA · Canada · Mexico</p>
+    <p style="margin:0;font-size:.75rem;">
+      ข้อมูลอ้างอิงจาก
+      <a href="https://www.fifa.com/en/tournaments/mens/worldcup/canadamexicousa2026/scores-fixtures" target="_blank">FIFA.com</a> ·
+      <a href="https://en.wikipedia.org/wiki/2026_FIFA_World_Cup" target="_blank">Wikipedia</a> ·
+      <a href="https://www.nbcsports.com/soccer/news/2026-world-cup-group-stage-table-full-standings-for-all-12-groups" target="_blank">NBC Sports</a>
+    </p>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  function switchTab(name) {
+    ['groups','schedule','knockout','venues'].forEach(function(t) {
+      document.getElementById('pane-' + t).style.display = (t === name) ? '' : 'none';
+      document.getElementById('tab-' + t).classList.toggle('active', t === name);
+    });
+    var tabWrap = document.querySelector('.tab-nav-wrap');
+    if (tabWrap) window.scrollTo({ top: tabWrap.offsetTop - 60, behavior: 'smooth' });
+  }
+</script>
+</body>
+</html>
