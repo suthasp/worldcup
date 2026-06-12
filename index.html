@@ -724,6 +724,44 @@
     var tabWrap = document.querySelector('.tab-nav-wrap');
     if (tabWrap) window.scrollTo({ top: tabWrap.offsetTop - 60, behavior: 'smooth' });
   }
+
+  (function(){
+    var F={
+      '🇲🇽':'mx','🇰🇷':'kr','🇨🇿':'cz','🇿🇦':'za',
+      '🇨🇦':'ca','🇧🇦':'ba','🇶🇦':'qa','🇨🇭':'ch',
+      '🇧🇷':'br','🇲🇦':'ma','🇭🇹':'ht',
+      '🇺🇸':'us','🇵🇾':'py','🇹🇷':'tr','🇦🇺':'au',
+      '🇩🇪':'de','🇪🇨':'ec','🇨🇮':'ci','🇨🇼':'cw',
+      '🇳🇱':'nl','🇯🇵':'jp','🇸🇪':'se','🇹🇳':'tn',
+      '🇧🇪':'be','🇳🇿':'nz','🇪🇬':'eg','🇮🇷':'ir',
+      '🇪🇸':'es','🇺🇾':'uy','🇸🇦':'sa','🇨🇻':'cv',
+      '🇫🇷':'fr','🇸🇳':'sn','🇳🇴':'no','🇮🇶':'iq',
+      '🇦🇷':'ar','🇩🇿':'dz','🇦🇹':'at','🇯🇴':'jo',
+      '🇵🇹':'pt','🇨🇴':'co','🇨🇩':'cd','🇺🇿':'uz',
+      '🇭🇷':'hr','🇬🇭':'gh','🇵🇦':'pa',
+      'ENG':'gb-eng','SCO':'gb-sct'
+    };
+    function mkImg(code,w,h){
+      var i=document.createElement('img');
+      i.src='https://flagcdn.com/'+w+'x'+h+'/'+code+'.png';
+      i.width=w; i.height=h;
+      i.style.cssText='border-radius:2px;vertical-align:middle;display:inline-block;';
+      return i;
+    }
+    document.querySelectorAll('.team-flag').forEach(function(el){
+      var code=F[el.textContent.trim()];
+      if(!code)return;
+      el.innerHTML=''; el.style.cssText='margin-right:5px;line-height:1;display:inline-block;vertical-align:middle;';
+      el.appendChild(mkImg(code,22,16));
+    });
+    document.querySelectorAll('.match-top span[style*="font-size"]').forEach(function(el){
+      var code=F[el.textContent.trim()];
+      if(!code)return;
+      el.innerHTML=''; el.removeAttribute('style');
+      el.style.cssText='display:inline-flex;align-items:center;';
+      el.appendChild(mkImg(code,36,27));
+    });
+  })();
 </script>
 </body>
 </html>
