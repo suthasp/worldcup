@@ -1507,6 +1507,9 @@
             if (k.shootout) return; // skip penalty shootout
             var tTxt  = ((k.type && (k.type.text || k.type.name)) || '').toLowerCase();
             var tType = ((k.type && k.type.type) || '').toLowerCase();
+            // Skip VAR review/decision markers (e.g. "var---red-card-upgrade") — only the
+            // resulting genuine card/goal event is counted, not the review itself.
+            if (tType.indexOf('var') === 0) return;
             var part  = (k.participants && k.participants[0]) || null;
             var ath   = part && part.athlete;
             var pname = ath && (ath.displayName || ath.shortName || ath.fullName);
@@ -1516,12 +1519,13 @@
             var meta  = { name:pname, team:tm.n, fi:tm.fi };
             var key   = pname + '|' + tname;
 
-            var isOwn  = /own.?goal/.test(tType) || /own goal/.test(tTxt);
-            var isGoal = (tType === 'goal' || k.scoringPlay === true || tTxt === 'goal' || /penalty.*scored/.test(tTxt));
+            var isOwn  = tType === 'own-goal' || /own goal/.test(tTxt);
+            var isGoal = (tType === 'goal' || k.scoringPlay === true);
             if (isGoal && !isOwn) bump(goalMap, key, meta);
 
-            if (/red.?card/.test(tType) || /red card/.test(tTxt) || /second yellow|yellow card to red/.test(tTxt)) bump(rcMap, key, meta);
-            else if (/yellow.?card/.test(tType) || /yellow card/.test(tTxt)) bump(ycMap, key, meta);
+            // Exact type match only — avoids miscounting VAR/"(red) card" text events.
+            if (tType === 'red-card' || tType === 'red-card-straight' || /second yellow/.test(tTxt)) bump(rcMap, key, meta);
+            else if (tType === 'yellow-card') bump(ycMap, key, meta);
           });
         });
       }
