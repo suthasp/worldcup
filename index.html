@@ -99,6 +99,7 @@
     @media (max-width: 576px) {
       .hero h1 { font-size: 1.7rem; }
     }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.2} }
   </style>
 </head>
 <body>
@@ -771,56 +772,56 @@
     });
   }
 
-  // ── Team config (ESPN name → flag + display name) ───────────────
+  // ── Team config: ESPN name → flag, display name, group index (0=A … 11=L) ──
   var TC = {
-    'mexico':{fi:'mx',n:'Mexico',host:1},
-    'south korea':{fi:'kr',n:'South Korea'},
-    'czechia':{fi:'cz',n:'Czechia'},'czech republic':{fi:'cz',n:'Czechia'},
-    'south africa':{fi:'za',n:'South Africa'},
-    'canada':{fi:'ca',n:'Canada',host:1},
-    'bosnia and herzegovina':{fi:'ba',n:'Bosnia & Herz.'},'bosnia-herzegovina':{fi:'ba',n:'Bosnia & Herz.'},
-    'qatar':{fi:'qa',n:'Qatar'},
-    'switzerland':{fi:'ch',n:'Switzerland'},
-    'brazil':{fi:'br',n:'Brazil'},
-    'morocco':{fi:'ma',n:'Morocco'},
-    'scotland':{fi:'gb-sct',n:'Scotland'},
-    'haiti':{fi:'ht',n:'Haiti'},
-    'united states':{fi:'us',n:'USA',host:1},'usa':{fi:'us',n:'USA',host:1},
-    'paraguay':{fi:'py',n:'Paraguay'},
-    'turkey':{fi:'tr',n:'Türkiye'},'türkiye':{fi:'tr',n:'Türkiye'},
-    'australia':{fi:'au',n:'Australia'},
-    'germany':{fi:'de',n:'Germany'},
-    'ecuador':{fi:'ec',n:'Ecuador'},
-    "cote d'ivoire":{fi:'ci',n:'Ivory Coast'},"côte d'ivoire":{fi:'ci',n:'Ivory Coast'},'ivory coast':{fi:'ci',n:'Ivory Coast'},
-    'curaçao':{fi:'cw',n:'Curaçao'},'curacao':{fi:'cw',n:'Curaçao'},
-    'netherlands':{fi:'nl',n:'Netherlands'},
-    'japan':{fi:'jp',n:'Japan'},
-    'sweden':{fi:'se',n:'Sweden'},
-    'tunisia':{fi:'tn',n:'Tunisia'},
-    'belgium':{fi:'be',n:'Belgium'},
-    'new zealand':{fi:'nz',n:'New Zealand'},
-    'egypt':{fi:'eg',n:'Egypt'},
-    'iran':{fi:'ir',n:'Iran'},
-    'spain':{fi:'es',n:'Spain'},
-    'uruguay':{fi:'uy',n:'Uruguay'},
-    'saudi arabia':{fi:'sa',n:'Saudi Arabia'},
-    'cape verde':{fi:'cv',n:'Cape Verde'},
-    'france':{fi:'fr',n:'France'},
-    'senegal':{fi:'sn',n:'Senegal'},
-    'norway':{fi:'no',n:'Norway'},
-    'iraq':{fi:'iq',n:'Iraq'},
-    'argentina':{fi:'ar',n:'Argentina'},
-    'algeria':{fi:'dz',n:'Algeria'},
-    'austria':{fi:'at',n:'Austria'},
-    'jordan':{fi:'jo',n:'Jordan'},
-    'portugal':{fi:'pt',n:'Portugal'},
-    'colombia':{fi:'co',n:'Colombia'},
-    'dr congo':{fi:'cd',n:'DR Congo'},'congo dr':{fi:'cd',n:'DR Congo'},'democratic republic of the congo':{fi:'cd',n:'DR Congo'},
-    'uzbekistan':{fi:'uz',n:'Uzbekistan'},
-    'england':{fi:'gb-eng',n:'England'},
-    'croatia':{fi:'hr',n:'Croatia'},
-    'ghana':{fi:'gh',n:'Ghana'},
-    'panama':{fi:'pa',n:'Panama'}
+    'mexico':        {fi:'mx',     n:'Mexico',        host:1, g:0},
+    'south korea':   {fi:'kr',     n:'South Korea',          g:0},
+    'czechia':       {fi:'cz',     n:'Czechia',               g:0}, 'czech republic':{fi:'cz',n:'Czechia',g:0},
+    'south africa':  {fi:'za',     n:'South Africa',          g:0},
+    'canada':        {fi:'ca',     n:'Canada',        host:1, g:1},
+    'bosnia and herzegovina':{fi:'ba',n:'Bosnia & Herz.',g:1},'bosnia-herzegovina':{fi:'ba',n:'Bosnia & Herz.',g:1},
+    'qatar':         {fi:'qa',     n:'Qatar',                 g:1},
+    'switzerland':   {fi:'ch',     n:'Switzerland',           g:1},
+    'brazil':        {fi:'br',     n:'Brazil',                g:2},
+    'morocco':       {fi:'ma',     n:'Morocco',               g:2},
+    'scotland':      {fi:'gb-sct', n:'Scotland',              g:2},
+    'haiti':         {fi:'ht',     n:'Haiti',                 g:2},
+    'united states': {fi:'us',     n:'USA',           host:1, g:3}, 'usa':{fi:'us',n:'USA',host:1,g:3},
+    'paraguay':      {fi:'py',     n:'Paraguay',              g:3},
+    'turkey':        {fi:'tr',     n:'Türkiye',               g:3}, 'türkiye':{fi:'tr',n:'Türkiye',g:3},
+    'australia':     {fi:'au',     n:'Australia',             g:3},
+    'germany':       {fi:'de',     n:'Germany',               g:4},
+    'ecuador':       {fi:'ec',     n:'Ecuador',               g:4},
+    "cote d'ivoire": {fi:'ci',     n:'Ivory Coast',           g:4}, "côte d'ivoire":{fi:'ci',n:'Ivory Coast',g:4}, 'ivory coast':{fi:'ci',n:'Ivory Coast',g:4},
+    'curaçao':       {fi:'cw',     n:'Curaçao',               g:4}, 'curacao':{fi:'cw',n:'Curaçao',g:4},
+    'netherlands':   {fi:'nl',     n:'Netherlands',           g:5},
+    'japan':         {fi:'jp',     n:'Japan',                 g:5},
+    'sweden':        {fi:'se',     n:'Sweden',                g:5},
+    'tunisia':       {fi:'tn',     n:'Tunisia',               g:5},
+    'belgium':       {fi:'be',     n:'Belgium',               g:6},
+    'new zealand':   {fi:'nz',     n:'New Zealand',           g:6},
+    'egypt':         {fi:'eg',     n:'Egypt',                 g:6},
+    'iran':          {fi:'ir',     n:'Iran',                  g:6},
+    'spain':         {fi:'es',     n:'Spain',                 g:7},
+    'uruguay':       {fi:'uy',     n:'Uruguay',               g:7},
+    'saudi arabia':  {fi:'sa',     n:'Saudi Arabia',          g:7},
+    'cape verde':    {fi:'cv',     n:'Cape Verde',            g:7},
+    'france':        {fi:'fr',     n:'France',                g:8},
+    'senegal':       {fi:'sn',     n:'Senegal',               g:8},
+    'norway':        {fi:'no',     n:'Norway',                g:8},
+    'iraq':          {fi:'iq',     n:'Iraq',                  g:8},
+    'argentina':     {fi:'ar',     n:'Argentina',             g:9},
+    'algeria':       {fi:'dz',     n:'Algeria',               g:9},
+    'austria':       {fi:'at',     n:'Austria',               g:9},
+    'jordan':        {fi:'jo',     n:'Jordan',                g:9},
+    'portugal':      {fi:'pt',     n:'Portugal',              g:10},
+    'colombia':      {fi:'co',     n:'Colombia',              g:10},
+    'dr congo':      {fi:'cd',     n:'DR Congo',              g:10}, 'congo dr':{fi:'cd',n:'DR Congo',g:10}, 'democratic republic of the congo':{fi:'cd',n:'DR Congo',g:10},
+    'uzbekistan':    {fi:'uz',     n:'Uzbekistan',            g:10},
+    'england':       {fi:'gb-eng', n:'England',               g:11},
+    'croatia':       {fi:'hr',     n:'Croatia',               g:11},
+    'ghana':         {fi:'gh',     n:'Ghana',                 g:11},
+    'panama':        {fi:'pa',     n:'Panama',                g:11}
   };
 
   function getStat(entry, name) {
@@ -828,25 +829,78 @@
     return s ? (s.value || 0) : 0;
   }
 
-  // ── Real-time standings from ESPN API ───────────────────────────
+  function addStat(entry, name, val) {
+    var s = (entry.stats || []).find(function(x) { return x.name === name; });
+    if (s) { s.value = (s.value || 0) + val; }
+    else { entry.stats = (entry.stats || []).concat([{name:name, value:val}]); }
+  }
+
+  // Patch a live/in-progress match into standings data
+  function patchLiveMatch(groups, event) {
+    var comps = event.competitions && event.competitions[0] && event.competitions[0].competitors;
+    if (!comps || comps.length < 2) return;
+    var homeComp = comps.find(function(c){return c.homeAway==='home';}) || comps[1];
+    var awayComp = comps.find(function(c){return c.homeAway==='away';}) || comps[0];
+    var homeScore = parseInt(homeComp.score) || 0;
+    var awayScore = parseInt(awayComp.score) || 0;
+
+    [homeComp, awayComp].forEach(function(comp) {
+      var tName = (comp.team && comp.team.displayName) || '';
+      var cfg = TC[tName.toLowerCase()];
+      if (!cfg || cfg.g === undefined) return;
+      var group = groups[cfg.g];
+      if (!group) return;
+      var entries = (group.standings && group.standings.entries) || group.entries || [];
+      var entry = entries.find(function(e){
+        return e.team && e.team.displayName && e.team.displayName.toLowerCase() === tName.toLowerCase();
+      });
+      if (!entry || entry._livePatched) return;
+
+      var isHome = comp.homeAway === 'home';
+      var my = isHome ? homeScore : awayScore;
+      var op = isHome ? awayScore : homeScore;
+      addStat(entry,'gamesPlayed', 1);
+      addStat(entry,'wins',    my > op ? 1 : 0);
+      addStat(entry,'ties',    my === op ? 1 : 0);
+      addStat(entry,'losses',  my < op ? 1 : 0);
+      addStat(entry,'pointDifferential', my - op);
+      addStat(entry,'pointsFor', my);
+      addStat(entry,'points', my > op ? 3 : my === op ? 1 : 0);
+      entry._livePatched = true;
+      group._hasLive = true;
+    });
+  }
+
+  // ── Real-time standings: Standings API + Scoreboard live patch ──
   async function refreshStandings() {
     var statusEl = document.getElementById('standings-status');
     try {
-      var r = await fetch('https://site.api.espn.com/apis/v2/sports/soccer/fifa.world/standings?season=2026');
-      var data = await r.json();
-      var groups = (data.children && data.children.length) ? data.children :
-                   (data.standings && data.standings.groups) ? data.standings.groups : [];
+      var results = await Promise.all([
+        fetch('https://site.api.espn.com/apis/v2/sports/soccer/fifa.world/standings?season=2026').then(function(r){return r.json();}),
+        fetch('https://site.api.espn.com/apis/site/v2/sports/soccer/fifa.world/scoreboard').then(function(r){return r.json();}).catch(function(){return null;})
+      ]);
+      var standingsData = results[0];
+      var scoreboardData = results[1];
+
+      var groups = (standingsData.children && standingsData.children.length) ? standingsData.children :
+                   (standingsData.standings && standingsData.standings.groups) ? standingsData.standings.groups : [];
+
+      // Patch in-progress matches from scoreboard
+      if (scoreboardData && scoreboardData.events) {
+        scoreboardData.events.forEach(function(ev) {
+          var state = ev.status && ev.status.type && ev.status.type.state;
+          if (state === 'in') patchLiveMatch(groups, ev);
+        });
+      }
 
       var tbodies = document.querySelectorAll('#pane-groups .standings-table tbody');
       var headers = document.querySelectorAll('#pane-groups .group-title');
+      var liveGroups = [];
 
       groups.forEach(function(group, gi) {
         var tbody = tbodies[gi];
         if (!tbody) return;
-
-        var entries = (group.standings && group.standings.entries) ? group.standings.entries :
-                      (group.entries || []);
-
+        var entries = (group.standings && group.standings.entries) || group.entries || [];
         var sorted = entries.slice().sort(function(a, b) {
           var pa = getStat(a,'points'), pb = getStat(b,'points');
           if (pb !== pa) return pb - pa;
@@ -854,17 +908,18 @@
           if (db !== da) return db - da;
           return getStat(b,'pointsFor') - getStat(a,'pointsFor');
         });
-
         var letter = String.fromCharCode(65 + gi);
-        var anyPlayed = sorted.some(function(e) { return getStat(e,'gamesPlayed') > 0; });
-
+        var anyPlayed = sorted.some(function(e){return getStat(e,'gamesPlayed')>0;});
+        var isLive = !!group._hasLive;
+        if (isLive) liveGroups.push(letter);
         if (headers[gi]) {
-          headers[gi].textContent = 'กลุ่ม ' + letter + (anyPlayed ? ' — อัพเดทแล้ว' : '');
+          headers[gi].innerHTML = 'กลุ่ม ' + letter +
+            (isLive ? ' &nbsp;<span style="color:#f44;font-size:.72rem;font-weight:700;animation:blink 1s infinite;">● LIVE</span>' : '') +
+            (!isLive && anyPlayed ? ' — อัพเดทแล้ว' : '');
         }
-
         tbody.innerHTML = sorted.map(function(entry, idx) {
-          var name = (entry.team && entry.team.displayName) || '';
-          var cfg = TC[name.toLowerCase()] || {};
+          var tName = (entry.team && entry.team.displayName) || '';
+          var cfg   = TC[tName.toLowerCase()] || {};
           var p   = getStat(entry,'gamesPlayed');
           var w   = getStat(entry,'wins');
           var d   = getStat(entry,'ties') || getStat(entry,'draws');
@@ -872,28 +927,24 @@
           var gd  = getStat(entry,'pointDifferential');
           var pts = getStat(entry,'points');
           var fi  = cfg.fi || 'xx';
-          var dn  = cfg.n || name;
-          var posNum   = anyPlayed ? (idx + 1) : '-';
-          var posClass = (anyPlayed && idx < 2) ? ' class="pos-' + (idx+1) + '"' : '';
-          var gdStr    = gd > 0 ? '+' + gd : String(gd);
+          var dn  = cfg.n || tName;
+          var posNum   = anyPlayed ? (idx+1) : '-';
+          var posClass = (anyPlayed && idx < 2) ? ' class="pos-'+(idx+1)+'"' : '';
+          var gdStr    = gd > 0 ? '+'+gd : String(gd);
           var host     = cfg.host ? ' <span class="host-badge">HOST</span>' : '';
-          var nm       = (anyPlayed && idx < 2) ? '<b>' + dn + '</b>' : dn;
-          return '<tr' + posClass + '>' +
-            '<td class="pos-num">' + posNum + '</td>' +
-            '<td><span class="fi fi-' + fi + '" style="border-radius:2px;vertical-align:middle;display:inline-block;font-size:1rem;margin-right:5px;"></span>' + nm + host + '</td>' +
-            '<td class="center">' + p   + '</td>' +
-            '<td class="center">' + w   + '</td>' +
-            '<td class="center">' + d   + '</td>' +
-            '<td class="center">' + l   + '</td>' +
-            '<td class="center">' + gdStr + '</td>' +
-            '<td class="pts-cell">' + pts + '</td></tr>';
+          var liveTag  = entry._livePatched ? ' <span style="color:#f44;font-size:.65rem;font-weight:700;">●</span>' : '';
+          var nm       = (anyPlayed && idx < 2) ? '<b>'+dn+'</b>' : dn;
+          return '<tr'+posClass+'><td class="pos-num">'+posNum+'</td>'+
+            '<td><span class="fi fi-'+fi+'" style="border-radius:2px;vertical-align:middle;display:inline-block;font-size:1rem;margin-right:5px;"></span>'+nm+host+liveTag+'</td>'+
+            '<td class="center">'+p+'</td><td class="center">'+w+'</td><td class="center">'+d+'</td>'+
+            '<td class="center">'+l+'</td><td class="center">'+gdStr+'</td><td class="pts-cell">'+pts+'</td></tr>';
         }).join('');
       });
 
+      var liveNote = liveGroups.length ? ' &nbsp;<span style="color:#f44;font-weight:700;">● LIVE: กลุ่ม '+liveGroups.join(', ')+'</span>' : '';
       if (statusEl) statusEl.innerHTML =
-        '✅ อัพเดทล่าสุด: <b>' +
-        new Date().toLocaleTimeString('th-TH', {hour:'2-digit', minute:'2-digit'}) +
-        ' น.</b> &nbsp;<span style="color:rgba(255,255,255,.4);font-size:.72rem;">รีเฟรชอัตโนมัติทุก 60 วิ</span>';
+        '✅ อัพเดท: <b>'+new Date().toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit'})+' น.</b>'+liveNote+
+        ' &nbsp;<span style="color:rgba(255,255,255,.4);font-size:.72rem;">ทุก 60 วิ</span>';
     } catch(e) {
       if (statusEl) statusEl.innerHTML = '⚠ โหลดข้อมูลไม่ได้ — ใช้ข้อมูล offline';
       console.warn('Standings refresh failed:', e);
