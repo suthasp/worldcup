@@ -101,6 +101,14 @@
       .hero h1 { font-size: 1.7rem; }
     }
     @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.2} }
+    /* ── Knockout Bracket ── */
+    .ko-mc     { background:rgba(240,165,0,.08); border:1px solid rgba(240,165,0,.32); border-radius:8px; padding:5px 8px; width:100%; }
+    .ko-mc-tbd { background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.1); border-radius:8px; padding:5px 8px; width:100%; }
+    .ko-tr  { display:flex; align-items:center; gap:5px; font-size:.7rem; color:#c8d0d8; padding:2px 0; }
+    .ko-fp  { display:inline-block; width:18px; height:12px; background:rgba(255,255,255,.15); border-radius:2px; flex-shrink:0; }
+    .ko-tn  { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    .ko-dv  { height:1px; background:rgba(255,255,255,.1); margin:2px 0; }
+    .ko-tdr { font-size:.63rem; color:rgba(255,255,255,.28); text-align:center; padding:3px 0; }
   </style>
 </head>
 <body>
@@ -596,81 +604,180 @@
 <!-- ═══ KNOCKOUT ═══ -->
 <div id="pane-knockout" style="display:none;">
 
-  <div class="row g-3 mb-4">
-    <div class="col-sm-6 col-lg-3">
-      <div class="knockout-info">
-        <div class="knockout-stage-badge" style="background:rgba(76,175,80,.15);color:#4caf50;border:1px solid #4caf50;">รอบ 32 ทีม</div>
-        <div style="font-size:.83rem;color:var(--wc-silver);">28 มิ.ย. – 4 ก.ค. 2569 · 16 คู่</div>
-      </div>
-    </div>
-    <div class="col-sm-6 col-lg-3">
-      <div class="knockout-info">
-        <div class="knockout-stage-badge" style="background:rgba(33,150,243,.15);color:#2196f3;border:1px solid #2196f3;">รอบ 16 ทีม</div>
-        <div style="font-size:.83rem;color:var(--wc-silver);">5 – 9 ก.ค. 2569 · 8 คู่</div>
-      </div>
-    </div>
-    <div class="col-sm-6 col-lg-3">
-      <div class="knockout-info">
-        <div class="knockout-stage-badge" style="background:rgba(240,165,0,.15);color:var(--wc-gold);border:1px solid var(--wc-gold);">รอบ 8 ทีม (QF)</div>
-        <div style="font-size:.83rem;color:var(--wc-silver);">11 – 12 ก.ค. 2569 · 4 คู่</div>
-      </div>
-    </div>
-    <div class="col-sm-6 col-lg-3">
-      <div class="knockout-info">
-        <div class="knockout-stage-badge" style="background:rgba(200,16,46,.2);color:#ef5350;border:1px solid #ef5350;">รอบรองชนะเลิศ</div>
-        <div style="font-size:.83rem;color:var(--wc-silver);">15 – 16 ก.ค. 2569 · 2 คู่</div>
-      </div>
-    </div>
+  <div style="text-align:center;margin-bottom:18px;">
+    <h4 style="font-weight:900;font-size:1.5rem;color:#fff;margin:0;">ตารางแข่งขัน <span style="color:var(--wc-gold);">รอบน็อคเอาท์</span></h4>
+    <div style="color:var(--wc-silver);font-size:.8rem;margin-top:4px;">28 มิถุนายน – 19 กรกฎาคม 2569 &nbsp;·&nbsp; 48 ทีม → 32 → 16 → 8 → 4 → Final</div>
   </div>
 
-  <div style="background:linear-gradient(135deg,rgba(240,165,0,.1),rgba(200,16,46,.07));border:1px solid rgba(240,165,0,.35);border-radius:16px;padding:28px;text-align:center;margin-bottom:28px;">
-    <div style="font-size:.8rem;color:var(--wc-gold);text-transform:uppercase;letter-spacing:2px;font-weight:700;">🏆 รอบชิงชนะเลิศ</div>
-    <div style="font-size:2.2rem;font-weight:900;margin:8px 0;">19 กรกฎาคม 2569</div>
-    <div style="color:var(--wc-silver);"><i class="fa fa-map-marker-alt me-1"></i>MetLife Stadium, East Rutherford, New Jersey, USA</div>
-    <div style="margin-top:6px;font-size:.85rem;color:rgba(255,255,255,.4);">ความจุ 82,500 ที่นั่ง</div>
-    <div style="margin-top:16px;font-size:3rem;">🏆</div>
-    <div style="margin-top:12px;color:rgba(255,255,255,.35);font-size:.85rem;">ผู้ชนะยังไม่ทราบ — รอผลรอบแบ่งกลุ่ม</div>
-  </div>
+  <div style="overflow-x:auto;padding-bottom:10px;">
 
-  <!-- Knockout schedule timeline -->
-  <div class="row g-3">
-    <div class="col-12"><h6 style="color:var(--wc-gold);margin-bottom:12px;"><i class="fa fa-calendar me-2"></i>ตารางรอบน็อคเอาท์</h6></div>
-    <div class="col-md-4">
-      <div class="group-card">
-        <div class="group-header"><div class="group-title">รอบ 32 ทีม &nbsp;<span style="color:rgba(255,255,255,.5);font-weight:400;font-size:.8rem;">28 มิ.ย. – 4 ก.ค.</span></div></div>
-        <div style="padding:12px;font-size:.83rem;color:var(--wc-silver);">
-          <div style="padding:5px 0;border-bottom:1px solid var(--card-border);">28 มิ.ย. — คู่ที่ 1 &amp; 2</div>
-          <div style="padding:5px 0;border-bottom:1px solid var(--card-border);">29 มิ.ย. — คู่ที่ 3 &amp; 4</div>
-          <div style="padding:5px 0;border-bottom:1px solid var(--card-border);">30 มิ.ย. — คู่ที่ 5 &amp; 6</div>
-          <div style="padding:5px 0;border-bottom:1px solid var(--card-border);">1 ก.ค. — คู่ที่ 7 &amp; 8</div>
-          <div style="padding:5px 0;border-bottom:1px solid var(--card-border);">2 ก.ค. — คู่ที่ 9 &amp; 10</div>
-          <div style="padding:5px 0;border-bottom:1px solid var(--card-border);">3 ก.ค. — คู่ที่ 11 &amp; 12</div>
-          <div style="padding:5px 0;">4 ก.ค. — คู่ที่ 13–16</div>
+    <!-- ── Round Labels ── -->
+    <div style="display:flex;align-items:flex-end;min-width:1472px;margin-bottom:6px;gap:0;">
+      <div style="width:148px;flex-shrink:0;text-align:center;font-size:.6rem;font-weight:700;color:var(--wc-gold);text-transform:uppercase;letter-spacing:.5px;">รอบ 32 ทีม<br><span style="color:rgba(255,255,255,.35);font-weight:400;">28 มิ.ย.–4 ก.ค.</span></div>
+      <div style="width:20px;flex-shrink:0;"></div>
+      <div style="width:148px;flex-shrink:0;text-align:center;font-size:.6rem;font-weight:700;color:#64b5f6;text-transform:uppercase;letter-spacing:.5px;">รอบ 16 ทีม<br><span style="color:rgba(255,255,255,.35);font-weight:400;">5–9 ก.ค.</span></div>
+      <div style="width:20px;flex-shrink:0;"></div>
+      <div style="width:140px;flex-shrink:0;text-align:center;font-size:.6rem;font-weight:700;color:#ff9800;text-transform:uppercase;letter-spacing:.5px;">รอบ 8 ทีม<br><span style="color:rgba(255,255,255,.35);font-weight:400;">11–12 ก.ค.</span></div>
+      <div style="width:20px;flex-shrink:0;"></div>
+      <div style="width:140px;flex-shrink:0;text-align:center;font-size:.6rem;font-weight:700;color:#ef5350;text-transform:uppercase;letter-spacing:.5px;">รอบรอง<br><span style="color:rgba(255,255,255,.35);font-weight:400;">15–16 ก.ค.</span></div>
+      <div style="width:20px;flex-shrink:0;"></div>
+      <div style="width:160px;flex-shrink:0;text-align:center;font-size:.65rem;font-weight:900;color:var(--wc-gold);">🏆 รอบชิงชนะเลิศ<br><span style="color:rgba(255,255,255,.35);font-weight:400;">19 ก.ค. 2569</span></div>
+      <div style="width:20px;flex-shrink:0;"></div>
+      <div style="width:140px;flex-shrink:0;text-align:center;font-size:.6rem;font-weight:700;color:#ef5350;text-transform:uppercase;letter-spacing:.5px;">รอบรอง<br><span style="color:rgba(255,255,255,.35);font-weight:400;">15–16 ก.ค.</span></div>
+      <div style="width:20px;flex-shrink:0;"></div>
+      <div style="width:140px;flex-shrink:0;text-align:center;font-size:.6rem;font-weight:700;color:#ff9800;text-transform:uppercase;letter-spacing:.5px;">รอบ 8 ทีม<br><span style="color:rgba(255,255,255,.35);font-weight:400;">11–12 ก.ค.</span></div>
+      <div style="width:20px;flex-shrink:0;"></div>
+      <div style="width:148px;flex-shrink:0;text-align:center;font-size:.6rem;font-weight:700;color:#64b5f6;text-transform:uppercase;letter-spacing:.5px;">รอบ 16 ทีม<br><span style="color:rgba(255,255,255,.35);font-weight:400;">5–9 ก.ค.</span></div>
+      <div style="width:20px;flex-shrink:0;"></div>
+      <div style="width:148px;flex-shrink:0;text-align:center;font-size:.6rem;font-weight:700;color:var(--wc-gold);text-transform:uppercase;letter-spacing:.5px;">รอบ 32 ทีม<br><span style="color:rgba(255,255,255,.35);font-weight:400;">28 มิ.ย.–4 ก.ค.</span></div>
+    </div>
+
+    <!-- ── Bracket ── -->
+    <div style="display:flex;align-items:stretch;min-width:1472px;height:576px;gap:0;">
+
+      <!-- R32 LEFT (8 × 72px slots) -->
+      <div style="width:148px;height:576px;flex-shrink:0;">
+        <div style="height:72px;display:flex;align-items:center;"><div class="ko-mc"><div class="ko-tr"><span class="ko-fp"></span><span class="ko-tn">#1 กลุ่ม E</span></div><div class="ko-dv"></div><div class="ko-tr"><span class="ko-fp"></span><span class="ko-tn">#3 A/B/C/D/F</span></div></div></div>
+        <div style="height:72px;display:flex;align-items:center;"><div class="ko-mc"><div class="ko-tr"><span class="ko-fp"></span><span class="ko-tn">#1 กลุ่ม I</span></div><div class="ko-dv"></div><div class="ko-tr"><span class="ko-fp"></span><span class="ko-tn">#3 C/D/F/G/H</span></div></div></div>
+        <div style="height:72px;display:flex;align-items:center;"><div class="ko-mc"><div class="ko-tr"><span class="ko-fp"></span><span class="ko-tn">#2 กลุ่ม A</span></div><div class="ko-dv"></div><div class="ko-tr"><span class="ko-fp"></span><span class="ko-tn">#2 กลุ่ม B</span></div></div></div>
+        <div style="height:72px;display:flex;align-items:center;"><div class="ko-mc"><div class="ko-tr"><span class="ko-fp"></span><span class="ko-tn">#1 กลุ่ม F</span></div><div class="ko-dv"></div><div class="ko-tr"><span class="ko-fp"></span><span class="ko-tn">#2 กลุ่ม C</span></div></div></div>
+        <div style="height:72px;display:flex;align-items:center;"><div class="ko-mc"><div class="ko-tr"><span class="ko-fp"></span><span class="ko-tn">#2 กลุ่ม K</span></div><div class="ko-dv"></div><div class="ko-tr"><span class="ko-fp"></span><span class="ko-tn">#2 กลุ่ม L</span></div></div></div>
+        <div style="height:72px;display:flex;align-items:center;"><div class="ko-mc"><div class="ko-tr"><span class="ko-fp"></span><span class="ko-tn">#1 กลุ่ม H</span></div><div class="ko-dv"></div><div class="ko-tr"><span class="ko-fp"></span><span class="ko-tn">#2 กลุ่ม J</span></div></div></div>
+        <div style="height:72px;display:flex;align-items:center;"><div class="ko-mc"><div class="ko-tr"><span class="ko-fp"></span><span class="ko-tn">#1 กลุ่ม D</span></div><div class="ko-dv"></div><div class="ko-tr"><span class="ko-fp"></span><span class="ko-tn">#3 B/E/F/I/J</span></div></div></div>
+        <div style="height:72px;display:flex;align-items:center;"><div class="ko-mc"><div class="ko-tr"><span class="ko-fp"></span><span class="ko-tn">#1 กลุ่ม G</span></div><div class="ko-dv"></div><div class="ko-tr"><span class="ko-fp"></span><span class="ko-tn">#3 A/E/H/I/J</span></div></div></div>
+      </div>
+
+      <!-- CONN: R32L → R16L -->
+      <svg width="20" height="576" style="flex-shrink:0;">
+        <polyline points="0,36 10,36 10,108 0,108" fill="none" stroke="rgba(240,165,0,.45)" stroke-width="1.5"/>
+        <line x1="10" y1="72" x2="20" y2="72" stroke="rgba(240,165,0,.45)" stroke-width="1.5"/>
+        <polyline points="0,180 10,180 10,252 0,252" fill="none" stroke="rgba(240,165,0,.45)" stroke-width="1.5"/>
+        <line x1="10" y1="216" x2="20" y2="216" stroke="rgba(240,165,0,.45)" stroke-width="1.5"/>
+        <polyline points="0,324 10,324 10,396 0,396" fill="none" stroke="rgba(240,165,0,.45)" stroke-width="1.5"/>
+        <line x1="10" y1="360" x2="20" y2="360" stroke="rgba(240,165,0,.45)" stroke-width="1.5"/>
+        <polyline points="0,468 10,468 10,540 0,540" fill="none" stroke="rgba(240,165,0,.45)" stroke-width="1.5"/>
+        <line x1="10" y1="504" x2="20" y2="504" stroke="rgba(240,165,0,.45)" stroke-width="1.5"/>
+      </svg>
+
+      <!-- R16 LEFT (4 × 144px slots) -->
+      <div style="width:148px;height:576px;flex-shrink:0;">
+        <div style="height:144px;display:flex;align-items:center;"><div class="ko-mc-tbd"><div class="ko-tdr">รอผลรอบ 32 ทีม</div><div class="ko-dv"></div><div class="ko-tdr">รอผลรอบ 32 ทีม</div></div></div>
+        <div style="height:144px;display:flex;align-items:center;"><div class="ko-mc-tbd"><div class="ko-tdr">รอผลรอบ 32 ทีม</div><div class="ko-dv"></div><div class="ko-tdr">รอผลรอบ 32 ทีม</div></div></div>
+        <div style="height:144px;display:flex;align-items:center;"><div class="ko-mc-tbd"><div class="ko-tdr">รอผลรอบ 32 ทีม</div><div class="ko-dv"></div><div class="ko-tdr">รอผลรอบ 32 ทีม</div></div></div>
+        <div style="height:144px;display:flex;align-items:center;"><div class="ko-mc-tbd"><div class="ko-tdr">รอผลรอบ 32 ทีม</div><div class="ko-dv"></div><div class="ko-tdr">รอผลรอบ 32 ทีม</div></div></div>
+      </div>
+
+      <!-- CONN: R16L → QFL -->
+      <svg width="20" height="576" style="flex-shrink:0;">
+        <polyline points="0,72 10,72 10,216 0,216" fill="none" stroke="rgba(240,165,0,.38)" stroke-width="1.5"/>
+        <line x1="10" y1="144" x2="20" y2="144" stroke="rgba(240,165,0,.38)" stroke-width="1.5"/>
+        <polyline points="0,360 10,360 10,504 0,504" fill="none" stroke="rgba(240,165,0,.38)" stroke-width="1.5"/>
+        <line x1="10" y1="432" x2="20" y2="432" stroke="rgba(240,165,0,.38)" stroke-width="1.5"/>
+      </svg>
+
+      <!-- QF LEFT (2 × 288px slots) -->
+      <div style="width:140px;height:576px;flex-shrink:0;">
+        <div style="height:288px;display:flex;align-items:center;"><div class="ko-mc-tbd"><div class="ko-tdr">รอผลรอบ 16 ทีม</div><div class="ko-dv"></div><div class="ko-tdr">รอผลรอบ 16 ทีม</div></div></div>
+        <div style="height:288px;display:flex;align-items:center;"><div class="ko-mc-tbd"><div class="ko-tdr">รอผลรอบ 16 ทีม</div><div class="ko-dv"></div><div class="ko-tdr">รอผลรอบ 16 ทีม</div></div></div>
+      </div>
+
+      <!-- CONN: QFL → SFL -->
+      <svg width="20" height="576" style="flex-shrink:0;">
+        <polyline points="0,144 10,144 10,432 0,432" fill="none" stroke="rgba(240,165,0,.3)" stroke-width="1.5"/>
+        <line x1="10" y1="288" x2="20" y2="288" stroke="rgba(240,165,0,.3)" stroke-width="1.5"/>
+      </svg>
+
+      <!-- SF LEFT (1 × 576px slot) -->
+      <div style="width:140px;height:576px;flex-shrink:0;display:flex;align-items:center;">
+        <div class="ko-mc-tbd"><div class="ko-tdr">รอผลรอบ 8 ทีม</div><div class="ko-dv"></div><div class="ko-tdr">รอผลรอบ 8 ทีม</div></div>
+      </div>
+
+      <!-- CONN: SFL → FINAL -->
+      <svg width="20" height="576" style="flex-shrink:0;">
+        <line x1="0" y1="288" x2="20" y2="288" stroke="rgba(240,165,0,.6)" stroke-width="2"/>
+      </svg>
+
+      <!-- FINAL CENTER -->
+      <div style="width:160px;height:576px;flex-shrink:0;display:flex;align-items:center;justify-content:center;">
+        <div style="background:linear-gradient(160deg,rgba(240,165,0,.18),rgba(200,16,46,.14));border:2px solid rgba(240,165,0,.65);border-radius:14px;padding:16px 12px;text-align:center;width:100%;box-shadow:0 0 24px rgba(240,165,0,.15);">
+          <div style="font-size:2.4rem;line-height:1;">🏆</div>
+          <div style="font-size:.8rem;font-weight:900;color:var(--wc-gold);margin-top:8px;letter-spacing:.5px;">รอบชิงชนะเลิศ</div>
+          <div style="font-size:.68rem;color:var(--wc-silver);margin-top:4px;">19 กรกฎาคม 2569</div>
+          <div style="font-size:.62rem;color:rgba(255,255,255,.38);margin-top:2px;">MetLife Stadium, NJ</div>
+          <div style="height:1px;background:rgba(255,255,255,.12);margin:10px 0;"></div>
+          <div style="font-size:.65rem;color:rgba(255,255,255,.25);">รอผลรอบรองชนะเลิศ</div>
+          <div style="font-size:.65rem;color:rgba(255,255,255,.2);padding:2px 0;">vs</div>
+          <div style="font-size:.65rem;color:rgba(255,255,255,.25);">รอผลรอบรองชนะเลิศ</div>
         </div>
       </div>
-    </div>
-    <div class="col-md-4">
-      <div class="group-card">
-        <div class="group-header"><div class="group-title">รอบ 16 ทีม &nbsp;<span style="color:rgba(255,255,255,.5);font-weight:400;font-size:.8rem;">5 – 9 ก.ค.</span></div></div>
-        <div style="padding:12px;font-size:.83rem;color:var(--wc-silver);">
-          <div style="padding:5px 0;border-bottom:1px solid var(--card-border);">5 ก.ค. — คู่ที่ 1 &amp; 2</div>
-          <div style="padding:5px 0;border-bottom:1px solid var(--card-border);">6 ก.ค. — คู่ที่ 3 &amp; 4</div>
-          <div style="padding:5px 0;border-bottom:1px solid var(--card-border);">7 ก.ค. — คู่ที่ 5 &amp; 6</div>
-          <div style="padding:5px 0;">8–9 ก.ค. — คู่ที่ 7 &amp; 8</div>
-        </div>
+
+      <!-- CONN: FINAL → SFR -->
+      <svg width="20" height="576" style="flex-shrink:0;">
+        <line x1="0" y1="288" x2="20" y2="288" stroke="rgba(240,165,0,.6)" stroke-width="2"/>
+      </svg>
+
+      <!-- SF RIGHT (1 × 576px slot) -->
+      <div style="width:140px;height:576px;flex-shrink:0;display:flex;align-items:center;">
+        <div class="ko-mc-tbd"><div class="ko-tdr">รอผลรอบ 8 ทีม</div><div class="ko-dv"></div><div class="ko-tdr">รอผลรอบ 8 ทีม</div></div>
       </div>
-    </div>
-    <div class="col-md-4">
-      <div class="group-card">
-        <div class="group-header"><div class="group-title">รอบ QF → Final</div></div>
-        <div style="padding:12px;font-size:.83rem;color:var(--wc-silver);">
-          <div style="padding:5px 0;border-bottom:1px solid var(--card-border);">11–12 ก.ค. — รอบก่อนรองชนะเลิศ (4 คู่)</div>
-          <div style="padding:5px 0;border-bottom:1px solid var(--card-border);">15–16 ก.ค. — รอบรองชนะเลิศ (2 คู่)</div>
-          <div style="padding:5px 0;border-bottom:1px solid var(--card-border);">18 ก.ค. — ชิงอันดับ 3</div>
-          <div style="padding:5px 0;color:var(--wc-gold);font-weight:700;">19 ก.ค. — 🏆 รอบชิงชนะเลิศ</div>
-        </div>
+
+      <!-- CONN: SFR → QFR -->
+      <svg width="20" height="576" style="flex-shrink:0;">
+        <polyline points="20,144 10,144 10,432 20,432" fill="none" stroke="rgba(240,165,0,.3)" stroke-width="1.5"/>
+        <line x1="10" y1="288" x2="0" y2="288" stroke="rgba(240,165,0,.3)" stroke-width="1.5"/>
+      </svg>
+
+      <!-- QF RIGHT (2 × 288px slots) -->
+      <div style="width:140px;height:576px;flex-shrink:0;">
+        <div style="height:288px;display:flex;align-items:center;"><div class="ko-mc-tbd"><div class="ko-tdr">รอผลรอบ 16 ทีม</div><div class="ko-dv"></div><div class="ko-tdr">รอผลรอบ 16 ทีม</div></div></div>
+        <div style="height:288px;display:flex;align-items:center;"><div class="ko-mc-tbd"><div class="ko-tdr">รอผลรอบ 16 ทีม</div><div class="ko-dv"></div><div class="ko-tdr">รอผลรอบ 16 ทีม</div></div></div>
       </div>
-    </div>
+
+      <!-- CONN: QFR → R16R -->
+      <svg width="20" height="576" style="flex-shrink:0;">
+        <polyline points="20,72 10,72 10,216 20,216" fill="none" stroke="rgba(240,165,0,.38)" stroke-width="1.5"/>
+        <line x1="10" y1="144" x2="0" y2="144" stroke="rgba(240,165,0,.38)" stroke-width="1.5"/>
+        <polyline points="20,360 10,360 10,504 20,504" fill="none" stroke="rgba(240,165,0,.38)" stroke-width="1.5"/>
+        <line x1="10" y1="432" x2="0" y2="432" stroke="rgba(240,165,0,.38)" stroke-width="1.5"/>
+      </svg>
+
+      <!-- R16 RIGHT (4 × 144px slots) -->
+      <div style="width:148px;height:576px;flex-shrink:0;">
+        <div style="height:144px;display:flex;align-items:center;"><div class="ko-mc-tbd"><div class="ko-tdr">รอผลรอบ 32 ทีม</div><div class="ko-dv"></div><div class="ko-tdr">รอผลรอบ 32 ทีม</div></div></div>
+        <div style="height:144px;display:flex;align-items:center;"><div class="ko-mc-tbd"><div class="ko-tdr">รอผลรอบ 32 ทีม</div><div class="ko-dv"></div><div class="ko-tdr">รอผลรอบ 32 ทีม</div></div></div>
+        <div style="height:144px;display:flex;align-items:center;"><div class="ko-mc-tbd"><div class="ko-tdr">รอผลรอบ 32 ทีม</div><div class="ko-dv"></div><div class="ko-tdr">รอผลรอบ 32 ทีม</div></div></div>
+        <div style="height:144px;display:flex;align-items:center;"><div class="ko-mc-tbd"><div class="ko-tdr">รอผลรอบ 32 ทีม</div><div class="ko-dv"></div><div class="ko-tdr">รอผลรอบ 32 ทีม</div></div></div>
+      </div>
+
+      <!-- CONN: R16R → R32R -->
+      <svg width="20" height="576" style="flex-shrink:0;">
+        <polyline points="20,36 10,36 10,108 20,108" fill="none" stroke="rgba(240,165,0,.45)" stroke-width="1.5"/>
+        <line x1="10" y1="72" x2="0" y2="72" stroke="rgba(240,165,0,.45)" stroke-width="1.5"/>
+        <polyline points="20,180 10,180 10,252 20,252" fill="none" stroke="rgba(240,165,0,.45)" stroke-width="1.5"/>
+        <line x1="10" y1="216" x2="0" y2="216" stroke="rgba(240,165,0,.45)" stroke-width="1.5"/>
+        <polyline points="20,324 10,324 10,396 20,396" fill="none" stroke="rgba(240,165,0,.45)" stroke-width="1.5"/>
+        <line x1="10" y1="360" x2="0" y2="360" stroke="rgba(240,165,0,.45)" stroke-width="1.5"/>
+        <polyline points="20,468 10,468 10,540 20,540" fill="none" stroke="rgba(240,165,0,.45)" stroke-width="1.5"/>
+        <line x1="10" y1="504" x2="0" y2="504" stroke="rgba(240,165,0,.45)" stroke-width="1.5"/>
+      </svg>
+
+      <!-- R32 RIGHT (8 × 72px slots) -->
+      <div style="width:148px;height:576px;flex-shrink:0;">
+        <div style="height:72px;display:flex;align-items:center;"><div class="ko-mc"><div class="ko-tr"><span class="ko-fp"></span><span class="ko-tn">#1 กลุ่ม J</span></div><div class="ko-dv"></div><div class="ko-tr"><span class="ko-fp"></span><span class="ko-tn">#2 กลุ่ม H</span></div></div></div>
+        <div style="height:72px;display:flex;align-items:center;"><div class="ko-mc"><div class="ko-tr"><span class="ko-fp"></span><span class="ko-tn">#2 กลุ่ม D</span></div><div class="ko-dv"></div><div class="ko-tr"><span class="ko-fp"></span><span class="ko-tn">#2 กลุ่ม G</span></div></div></div>
+        <div style="height:72px;display:flex;align-items:center;"><div class="ko-mc"><div class="ko-tr"><span class="ko-fp"></span><span class="ko-tn">#1 กลุ่ม B</span></div><div class="ko-dv"></div><div class="ko-tr"><span class="ko-fp"></span><span class="ko-tn">#3 E/F/G/I/J</span></div></div></div>
+        <div style="height:72px;display:flex;align-items:center;"><div class="ko-mc"><div class="ko-tr"><span class="ko-fp"></span><span class="ko-tn">#1 กลุ่ม K</span></div><div class="ko-dv"></div><div class="ko-tr"><span class="ko-fp"></span><span class="ko-tn">#3 D/E/I/J/L</span></div></div></div>
+        <div style="height:72px;display:flex;align-items:center;"><div class="ko-mc"><div class="ko-tr"><span class="ko-fp"></span><span class="ko-tn">#1 กลุ่ม C</span></div><div class="ko-dv"></div><div class="ko-tr"><span class="ko-fp"></span><span class="ko-tn">#2 กลุ่ม F</span></div></div></div>
+        <div style="height:72px;display:flex;align-items:center;"><div class="ko-mc"><div class="ko-tr"><span class="ko-fp"></span><span class="ko-tn">#2 กลุ่ม E</span></div><div class="ko-dv"></div><div class="ko-tr"><span class="ko-fp"></span><span class="ko-tn">#2 กลุ่ม I</span></div></div></div>
+        <div style="height:72px;display:flex;align-items:center;"><div class="ko-mc"><div class="ko-tr"><span class="ko-fp"></span><span class="ko-tn">#1 กลุ่ม A</span></div><div class="ko-dv"></div><div class="ko-tr"><span class="ko-fp"></span><span class="ko-tn">#3 C/E/F/H/I</span></div></div></div>
+        <div style="height:72px;display:flex;align-items:center;"><div class="ko-mc"><div class="ko-tr"><span class="ko-fp"></span><span class="ko-tn">#1 กลุ่ม L</span></div><div class="ko-dv"></div><div class="ko-tr"><span class="ko-fp"></span><span class="ko-tn">#3 E/H/I/J/K</span></div></div></div>
+      </div>
+
+    </div><!-- /bracket row -->
+  </div><!-- /overflow-x -->
+
+  <div style="text-align:center;margin-top:14px;font-size:.76rem;color:rgba(255,255,255,.35);">
+    <i class="fa fa-info-circle me-1"></i>ชิงอันดับที่ 3: 18 กรกฎาคม 2569 &nbsp;·&nbsp; SoFi Stadium, Los Angeles, USA
   </div>
 
 </div><!-- /pane-knockout -->
