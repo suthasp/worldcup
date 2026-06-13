@@ -85,6 +85,12 @@
     .group-tag { font-size: .72rem; background: rgba(26,58,110,.6); color: #90caf9; padding: 2px 8px; border-radius: 10px; font-weight: 600; border: 1px solid rgba(144,202,249,.2); }
 
     .bracket-wrap { overflow-x: auto; padding-bottom: 10px; }
+    /* ── Custom scrollbar (dark theme) ── */
+    .ko-scroll, .bracket-wrap { scrollbar-width: thin; scrollbar-color: rgba(240,165,0,.45) rgba(255,255,255,.04); }
+    .ko-scroll::-webkit-scrollbar, .bracket-wrap::-webkit-scrollbar { height: 10px; width: 10px; }
+    .ko-scroll::-webkit-scrollbar-track, .bracket-wrap::-webkit-scrollbar-track { background: rgba(255,255,255,.04); border-radius: 10px; }
+    .ko-scroll::-webkit-scrollbar-thumb, .bracket-wrap::-webkit-scrollbar-thumb { background: rgba(240,165,0,.4); border-radius: 10px; border: 2px solid transparent; background-clip: padding-box; }
+    .ko-scroll::-webkit-scrollbar-thumb:hover, .bracket-wrap::-webkit-scrollbar-thumb:hover { background: rgba(240,165,0,.7); background-clip: padding-box; }
     .knockout-info { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 14px; padding: 20px; margin-bottom: 24px; }
     .knockout-stage-badge { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: .78rem; font-weight: 700; margin-bottom: 8px; }
 
@@ -622,7 +628,7 @@
     <div style="color:var(--wc-silver);font-size:.8rem;margin-top:4px;">28 มิถุนายน – 19 กรกฎาคม 2569 &nbsp;·&nbsp; 48 ทีม → 32 → 16 → 8 → 4 → Final</div>
   </div>
 
-  <div style="overflow-x:auto;padding-bottom:10px;">
+  <div class="ko-scroll" style="overflow-x:auto;padding-bottom:10px;">
 
     <!-- ── Round Labels ── -->
     <div style="display:flex;align-items:flex-end;min-width:1472px;margin-bottom:6px;gap:0;">
