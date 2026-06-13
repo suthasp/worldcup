@@ -461,10 +461,10 @@
       </div>
       <div class="match-meta"><span><i class="fa fa-map-marker-alt"></i>BMO Field, Toronto 🇨🇦</span><span class="group-tag">กลุ่ม B · MD1</span><span><i class="fa fa-clock"></i>02:00 น.</span></div>
     </div>
-    <div class="match-card today">
+    <div class="match-card finished">
       <div class="match-top">
         <div class="match-team"><span style="font-size:1.3rem;">🇺🇸</span><span>USA <span class="host-badge">HOST</span></span></div>
-        <div class="match-score-box"><div class="match-score">3 – 0</div><div class="match-vs" style="color:#f0a500;">● กำลังแข่ง</div></div>
+        <div class="match-score-box"><div class="match-score">4 – 1</div><div class="match-vs">จบแล้ว</div></div>
         <div class="match-team right"><span>Paraguay</span><span style="font-size:1.3rem;">🇵🇾</span></div>
       </div>
       <div class="match-meta"><span><i class="fa fa-map-marker-alt"></i>SoFi Stadium, Inglewood, CA 🇺🇸</span><span class="group-tag">กลุ่ม D · MD1</span><span><i class="fa fa-clock"></i>08:00 น.</span></div>
@@ -1327,22 +1327,29 @@
     try {
       var results = await Promise.all([
         fetch('https://site.api.espn.com/apis/v2/sports/soccer/fifa.world/standings?season=2026').then(function(r){return r.json();}),
-        fetch('https://site.api.espn.com/apis/site/v2/sports/soccer/fifa.world/scoreboard').then(function(r){return r.json();}).catch(function(){return null;})
+        fetch('https://site.api.espn.com/apis/site/v2/sports/soccer/fifa.world/scoreboard').then(function(r){return r.json();}).catch(function(){return null;}),
+        // Full tournament range — keeps past finished matches up to date on the schedule
+        fetch('https://site.api.espn.com/apis/site/v2/sports/soccer/fifa.world/scoreboard?dates=20260611-20260719').then(function(r){return r.json();}).catch(function(){return null;})
       ]);
-      var standingsData = results[0];
+      var standingsData  = results[0];
       var scoreboardData = results[1];
+      var fullSchedule   = results[2];
 
       var groups = (standingsData.children && standingsData.children.length) ? standingsData.children :
                    (standingsData.standings && standingsData.standings.groups) ? standingsData.standings.groups : [];
 
-      // Patch in-progress matches into standings + update schedule cards
+      // Patch in-progress matches into standings (from today's live scoreboard)
       if (scoreboardData && scoreboardData.events) {
         scoreboardData.events.forEach(function(ev) {
           var state = ev.status && ev.status.type && ev.status.type.state;
           if (state === 'in') patchLiveMatch(groups, ev);
         });
-        updateScheduleCards(scoreboardData.events);
       }
+
+      // Update schedule cards: full range first (all finished results),
+      // then today's scoreboard so any live match wins.
+      if (fullSchedule && fullSchedule.events)   updateScheduleCards(fullSchedule.events);
+      if (scoreboardData && scoreboardData.events) updateScheduleCards(scoreboardData.events);
 
       var tbodies = document.querySelectorAll('#pane-groups .standings-table tbody');
       var headers = document.querySelectorAll('#pane-groups .group-title');
