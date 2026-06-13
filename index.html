@@ -149,9 +149,13 @@
 
 <!-- ═══ GROUPS ═══ -->
 <div id="pane-groups">
-  <div class="d-flex align-items-center gap-3 mb-4 flex-wrap">
+  <div class="d-flex align-items-center gap-3 mb-3 flex-wrap">
     <span class="badge" style="background:#4caf50;padding:5px 12px;border-radius:12px;font-size:.8rem;">● รอบแบ่งกลุ่ม: 11 มิ.ย. – 27 มิ.ย. 2569</span>
     <span style="font-size:.82rem;color:var(--wc-silver);">2 อันดับแรกแต่ละกลุ่ม + 8 ทีมอันดับ 3 ที่ดีที่สุด ผ่านเข้ารอบ 32</span>
+  </div>
+  <div class="d-flex align-items-center justify-content-between mb-3 flex-wrap gap-2">
+    <span id="standings-status" style="font-size:.78rem;color:var(--wc-silver);">⏳ กำลังโหลดข้อมูล...</span>
+    <button onclick="refreshStandings()" style="background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.2);color:#fff;padding:4px 14px;border-radius:8px;font-size:.78rem;cursor:pointer;">⟳ รีเฟรช</button>
   </div>
   <div class="row g-3">
 
@@ -726,46 +730,179 @@
     if (tabWrap) window.scrollTo({ top: tabWrap.offsetTop - 60, behavior: 'smooth' });
   }
 
-  (function(){
-    var F={
-      '🇲🇽':'mx','🇰🇷':'kr','🇨🇿':'cz','🇿🇦':'za',
-      '🇨🇦':'ca','🇧🇦':'ba','🇶🇦':'qa','🇨🇭':'ch',
-      '🇧🇷':'br','🇲🇦':'ma','🇭🇹':'ht',
-      '🇺🇸':'us','🇵🇾':'py','🇹🇷':'tr','🇦🇺':'au',
-      '🇩🇪':'de','🇪🇨':'ec','🇨🇮':'ci','🇨🇼':'cw',
-      '🇳🇱':'nl','🇯🇵':'jp','🇸🇪':'se','🇹🇳':'tn',
-      '🇧🇪':'be','🇳🇿':'nz','🇪🇬':'eg','🇮🇷':'ir',
-      '🇪🇸':'es','🇺🇾':'uy','🇸🇦':'sa','🇨🇻':'cv',
-      '🇫🇷':'fr','🇸🇳':'sn','🇳🇴':'no','🇮🇶':'iq',
-      '🇦🇷':'ar','🇩🇿':'dz','🇦🇹':'at','🇯🇴':'jo',
-      '🇵🇹':'pt','🇨🇴':'co','🇨🇩':'cd','🇺🇿':'uz',
-      '🇭🇷':'hr','🇬🇭':'gh','🇵🇦':'pa',
-      'ENG':'gb-eng','SCO':'gb-sct'
-    };
-    function mkFlag(code){
-      var s=document.createElement('span');
-      s.className='fi fi-'+code;
-      s.style.cssText='border-radius:2px;vertical-align:middle;display:inline-block;font-size:1rem;';
-      return s;
-    }
-    document.querySelectorAll('.team-flag').forEach(function(el){
-      var code=F[el.textContent.trim()];
-      if(!code)return;
-      el.innerHTML=''; el.style.cssText='margin-right:5px;line-height:1;display:inline-block;vertical-align:middle;';
-      el.appendChild(mkFlag(code));
-    });
-    document.querySelectorAll('.match-top span[style*="font-size"]').forEach(function(el){
-      var txt=el.textContent.trim();
-      var code=F[txt];
-      if(!code)return;
-      el.innerHTML=''; el.removeAttribute('style');
-      el.style.cssText='display:inline-flex;align-items:center;';
-      var s=document.createElement('span');
-      s.className='fi fi-'+code;
-      s.style.cssText='border-radius:2px;vertical-align:middle;display:inline-block;font-size:1.5rem;';
+  // ── Flag rendering ──────────────────────────────────────────────
+  var FI_MAP = {
+    '🇲🇽':'mx','🇰🇷':'kr','🇨🇿':'cz','🇿🇦':'za',
+    '🇨🇦':'ca','🇧🇦':'ba','🇶🇦':'qa','🇨🇭':'ch',
+    '🇧🇷':'br','🇲🇦':'ma','🇭🇹':'ht',
+    '🇺🇸':'us','🇵🇾':'py','🇹🇷':'tr','🇦🇺':'au',
+    '🇩🇪':'de','🇪🇨':'ec','🇨🇮':'ci','🇨🇼':'cw',
+    '🇳🇱':'nl','🇯🇵':'jp','🇸🇪':'se','🇹🇳':'tn',
+    '🇧🇪':'be','🇳🇿':'nz','🇪🇬':'eg','🇮🇷':'ir',
+    '🇪🇸':'es','🇺🇾':'uy','🇸🇦':'sa','🇨🇻':'cv',
+    '🇫🇷':'fr','🇸🇳':'sn','🇳🇴':'no','🇮🇶':'iq',
+    '🇦🇷':'ar','🇩🇿':'dz','🇦🇹':'at','🇯🇴':'jo',
+    '🇵🇹':'pt','🇨🇴':'co','🇨🇩':'cd','🇺🇿':'uz',
+    '🇭🇷':'hr','🇬🇭':'gh','🇵🇦':'pa',
+    'ENG':'gb-eng','SCO':'gb-sct'
+  };
+
+  function applyFlags() {
+    document.querySelectorAll('.team-flag').forEach(function(el) {
+      var code = FI_MAP[el.textContent.trim()];
+      if (!code) return;
+      el.innerHTML = '';
+      el.style.cssText = 'margin-right:5px;line-height:1;display:inline-block;vertical-align:middle;';
+      var s = document.createElement('span');
+      s.className = 'fi fi-' + code;
+      s.style.cssText = 'border-radius:2px;vertical-align:middle;display:inline-block;font-size:1rem;';
       el.appendChild(s);
     });
-  })();
+    document.querySelectorAll('.match-top span[style*="font-size"]').forEach(function(el) {
+      var txt = el.textContent.trim();
+      var code = FI_MAP[txt];
+      if (!code) return;
+      el.innerHTML = ''; el.removeAttribute('style');
+      el.style.cssText = 'display:inline-flex;align-items:center;';
+      var s = document.createElement('span');
+      s.className = 'fi fi-' + code;
+      s.style.cssText = 'border-radius:2px;vertical-align:middle;display:inline-block;font-size:1.5rem;';
+      el.appendChild(s);
+    });
+  }
+
+  // ── Team config (ESPN name → flag + display name) ───────────────
+  var TC = {
+    'mexico':{fi:'mx',n:'Mexico',host:1},
+    'south korea':{fi:'kr',n:'South Korea'},
+    'czechia':{fi:'cz',n:'Czechia'},'czech republic':{fi:'cz',n:'Czechia'},
+    'south africa':{fi:'za',n:'South Africa'},
+    'canada':{fi:'ca',n:'Canada',host:1},
+    'bosnia and herzegovina':{fi:'ba',n:'Bosnia & Herz.'},'bosnia-herzegovina':{fi:'ba',n:'Bosnia & Herz.'},
+    'qatar':{fi:'qa',n:'Qatar'},
+    'switzerland':{fi:'ch',n:'Switzerland'},
+    'brazil':{fi:'br',n:'Brazil'},
+    'morocco':{fi:'ma',n:'Morocco'},
+    'scotland':{fi:'gb-sct',n:'Scotland'},
+    'haiti':{fi:'ht',n:'Haiti'},
+    'united states':{fi:'us',n:'USA',host:1},'usa':{fi:'us',n:'USA',host:1},
+    'paraguay':{fi:'py',n:'Paraguay'},
+    'turkey':{fi:'tr',n:'Türkiye'},'türkiye':{fi:'tr',n:'Türkiye'},
+    'australia':{fi:'au',n:'Australia'},
+    'germany':{fi:'de',n:'Germany'},
+    'ecuador':{fi:'ec',n:'Ecuador'},
+    "cote d'ivoire":{fi:'ci',n:'Ivory Coast'},"côte d'ivoire":{fi:'ci',n:'Ivory Coast'},'ivory coast':{fi:'ci',n:'Ivory Coast'},
+    'curaçao':{fi:'cw',n:'Curaçao'},'curacao':{fi:'cw',n:'Curaçao'},
+    'netherlands':{fi:'nl',n:'Netherlands'},
+    'japan':{fi:'jp',n:'Japan'},
+    'sweden':{fi:'se',n:'Sweden'},
+    'tunisia':{fi:'tn',n:'Tunisia'},
+    'belgium':{fi:'be',n:'Belgium'},
+    'new zealand':{fi:'nz',n:'New Zealand'},
+    'egypt':{fi:'eg',n:'Egypt'},
+    'iran':{fi:'ir',n:'Iran'},
+    'spain':{fi:'es',n:'Spain'},
+    'uruguay':{fi:'uy',n:'Uruguay'},
+    'saudi arabia':{fi:'sa',n:'Saudi Arabia'},
+    'cape verde':{fi:'cv',n:'Cape Verde'},
+    'france':{fi:'fr',n:'France'},
+    'senegal':{fi:'sn',n:'Senegal'},
+    'norway':{fi:'no',n:'Norway'},
+    'iraq':{fi:'iq',n:'Iraq'},
+    'argentina':{fi:'ar',n:'Argentina'},
+    'algeria':{fi:'dz',n:'Algeria'},
+    'austria':{fi:'at',n:'Austria'},
+    'jordan':{fi:'jo',n:'Jordan'},
+    'portugal':{fi:'pt',n:'Portugal'},
+    'colombia':{fi:'co',n:'Colombia'},
+    'dr congo':{fi:'cd',n:'DR Congo'},'congo dr':{fi:'cd',n:'DR Congo'},'democratic republic of the congo':{fi:'cd',n:'DR Congo'},
+    'uzbekistan':{fi:'uz',n:'Uzbekistan'},
+    'england':{fi:'gb-eng',n:'England'},
+    'croatia':{fi:'hr',n:'Croatia'},
+    'ghana':{fi:'gh',n:'Ghana'},
+    'panama':{fi:'pa',n:'Panama'}
+  };
+
+  function getStat(entry, name) {
+    var s = (entry.stats || []).find(function(x) { return x.name === name; });
+    return s ? (s.value || 0) : 0;
+  }
+
+  // ── Real-time standings from ESPN API ───────────────────────────
+  async function refreshStandings() {
+    var statusEl = document.getElementById('standings-status');
+    try {
+      var r = await fetch('https://site.api.espn.com/apis/v2/sports/soccer/fifa.world/standings?season=2026');
+      var data = await r.json();
+      var groups = (data.children && data.children.length) ? data.children :
+                   (data.standings && data.standings.groups) ? data.standings.groups : [];
+
+      var tbodies = document.querySelectorAll('#pane-groups .standings-table tbody');
+      var headers = document.querySelectorAll('#pane-groups .group-title');
+
+      groups.forEach(function(group, gi) {
+        var tbody = tbodies[gi];
+        if (!tbody) return;
+
+        var entries = (group.standings && group.standings.entries) ? group.standings.entries :
+                      (group.entries || []);
+
+        var sorted = entries.slice().sort(function(a, b) {
+          var pa = getStat(a,'points'), pb = getStat(b,'points');
+          if (pb !== pa) return pb - pa;
+          var da = getStat(a,'pointDifferential'), db = getStat(b,'pointDifferential');
+          if (db !== da) return db - da;
+          return getStat(b,'pointsFor') - getStat(a,'pointsFor');
+        });
+
+        var letter = String.fromCharCode(65 + gi);
+        var anyPlayed = sorted.some(function(e) { return getStat(e,'gamesPlayed') > 0; });
+
+        if (headers[gi]) {
+          headers[gi].textContent = 'กลุ่ม ' + letter + (anyPlayed ? ' — อัพเดทแล้ว' : '');
+        }
+
+        tbody.innerHTML = sorted.map(function(entry, idx) {
+          var name = (entry.team && entry.team.displayName) || '';
+          var cfg = TC[name.toLowerCase()] || {};
+          var p   = getStat(entry,'gamesPlayed');
+          var w   = getStat(entry,'wins');
+          var d   = getStat(entry,'ties') || getStat(entry,'draws');
+          var l   = getStat(entry,'losses');
+          var gd  = getStat(entry,'pointDifferential');
+          var pts = getStat(entry,'points');
+          var fi  = cfg.fi || 'xx';
+          var dn  = cfg.n || name;
+          var posNum   = anyPlayed ? (idx + 1) : '-';
+          var posClass = (anyPlayed && idx < 2) ? ' class="pos-' + (idx+1) + '"' : '';
+          var gdStr    = gd > 0 ? '+' + gd : String(gd);
+          var host     = cfg.host ? ' <span class="host-badge">HOST</span>' : '';
+          var nm       = (anyPlayed && idx < 2) ? '<b>' + dn + '</b>' : dn;
+          return '<tr' + posClass + '>' +
+            '<td class="pos-num">' + posNum + '</td>' +
+            '<td><span class="fi fi-' + fi + '" style="border-radius:2px;vertical-align:middle;display:inline-block;font-size:1rem;margin-right:5px;"></span>' + nm + host + '</td>' +
+            '<td class="center">' + p   + '</td>' +
+            '<td class="center">' + w   + '</td>' +
+            '<td class="center">' + d   + '</td>' +
+            '<td class="center">' + l   + '</td>' +
+            '<td class="center">' + gdStr + '</td>' +
+            '<td class="pts-cell">' + pts + '</td></tr>';
+        }).join('');
+      });
+
+      if (statusEl) statusEl.innerHTML =
+        '✅ อัพเดทล่าสุด: <b>' +
+        new Date().toLocaleTimeString('th-TH', {hour:'2-digit', minute:'2-digit'}) +
+        ' น.</b> &nbsp;<span style="color:rgba(255,255,255,.4);font-size:.72rem;">รีเฟรชอัตโนมัติทุก 60 วิ</span>';
+    } catch(e) {
+      if (statusEl) statusEl.innerHTML = '⚠ โหลดข้อมูลไม่ได้ — ใช้ข้อมูล offline';
+      console.warn('Standings refresh failed:', e);
+    }
+  }
+
+  applyFlags();
+  refreshStandings();
+  setInterval(refreshStandings, 60000);
 </script>
 </body>
 </html>
