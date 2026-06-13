@@ -872,6 +872,50 @@
     });
   }
 
+  // ── Update schedule match cards from ESPN scoreboard ───────────
+  function updateScheduleCards(events) {
+    if (!events || !events.length) return;
+    var cards = document.querySelectorAll('#pane-schedule .match-card');
+    events.forEach(function(ev) {
+      var comps = ev.competitions && ev.competitions[0] && ev.competitions[0].competitors;
+      if (!comps || comps.length < 2) return;
+      var homeComp = comps.find(function(c){return c.homeAway==='home';}) || comps[0];
+      var awayComp = comps.find(function(c){return c.homeAway==='away';}) || comps[1];
+      var homeName = (homeComp.team && homeComp.team.displayName) || '';
+      var awayName = (awayComp.team && awayComp.team.displayName) || '';
+      var homeDisp = (TC[homeName.toLowerCase()] || {}).n || homeName;
+      var awayDisp = (TC[awayName.toLowerCase()] || {}).n || awayName;
+
+      // Find card containing both team names
+      var card = null;
+      for (var i = 0; i < cards.length; i++) {
+        var t = cards[i].textContent.toLowerCase();
+        if (t.indexOf(homeDisp.toLowerCase()) >= 0 && t.indexOf(awayDisp.toLowerCase()) >= 0) {
+          card = cards[i]; break;
+        }
+      }
+      if (!card) return;
+
+      var scoreBox = card.querySelector('.match-score-box');
+      if (!scoreBox) return;
+      var state     = ev.status && ev.status.type && ev.status.type.state;
+      var completed = ev.status && ev.status.type && ev.status.type.completed;
+      var hs = parseInt(homeComp.score) || 0;
+      var as_ = parseInt(awayComp.score) || 0;
+      var detail = (ev.status && ev.status.type && ev.status.type.shortDetail) || 'LIVE';
+
+      if (state === 'pre') return; // not started
+      if (state === 'in') {
+        scoreBox.innerHTML = '<div class="match-score">' + hs + ' – ' + as_ + '</div>' +
+          '<div class="match-vs" style="color:#f44;font-weight:700;font-size:.7rem;animation:blink 1s infinite;">● ' + detail + '</div>';
+        card.className = card.className.replace(/\bupcoming\b/g, 'today');
+      } else if (completed) {
+        scoreBox.innerHTML = '<div class="match-score">' + hs + ' – ' + as_ + '</div><div class="match-vs">จบแล้ว</div>';
+        card.className = card.className.replace(/\btoday\b|\bupcoming\b/g, 'finished');
+      }
+    });
+  }
+
   // ── Real-time standings: Standings API + Scoreboard live patch ──
   async function refreshStandings() {
     var statusEl = document.getElementById('standings-status');
@@ -886,12 +930,13 @@
       var groups = (standingsData.children && standingsData.children.length) ? standingsData.children :
                    (standingsData.standings && standingsData.standings.groups) ? standingsData.standings.groups : [];
 
-      // Patch in-progress matches from scoreboard
+      // Patch in-progress matches into standings + update schedule cards
       if (scoreboardData && scoreboardData.events) {
         scoreboardData.events.forEach(function(ev) {
           var state = ev.status && ev.status.type && ev.status.type.state;
           if (state === 'in') patchLiveMatch(groups, ev);
         });
+        updateScheduleCards(scoreboardData.events);
       }
 
       var tbodies = document.querySelectorAll('#pane-groups .standings-table tbody');
