@@ -91,6 +91,31 @@
     .ko-scroll::-webkit-scrollbar-track, .bracket-wrap::-webkit-scrollbar-track { background: rgba(255,255,255,.04); border-radius: 10px; }
     .ko-scroll::-webkit-scrollbar-thumb, .bracket-wrap::-webkit-scrollbar-thumb { background: rgba(240,165,0,.4); border-radius: 10px; border: 2px solid transparent; background-clip: padding-box; }
     .ko-scroll::-webkit-scrollbar-thumb:hover, .bracket-wrap::-webkit-scrollbar-thumb:hover { background: rgba(240,165,0,.7); background-clip: padding-box; }
+
+    /* ── Reports (top scorers / cards) ── */
+    .rep-seg { display:inline-flex; background:rgba(255,255,255,.05); border:1px solid var(--card-border); border-radius:10px; padding:4px; gap:4px; flex-wrap:wrap; }
+    .rep-seg button { background:transparent; border:none; color:rgba(255,255,255,.6); padding:7px 16px; border-radius:7px; font-size:.85rem; font-weight:600; cursor:pointer; transition:all .2s; }
+    .rep-seg button:hover { color:#fff; }
+    .rep-seg button.active { background:var(--wc-gold); color:#080e1a; }
+    .rep-card { background:var(--card-bg); border:1px solid var(--card-border); border-radius:14px; overflow:hidden; }
+    .rep-tbl { width:100%; border-collapse:collapse; }
+    .rep-tbl th { font-size:.7rem; text-transform:uppercase; letter-spacing:.5px; color:rgba(255,255,255,.4); font-weight:600; text-align:left; padding:12px 14px; border-bottom:1px solid var(--card-border); }
+    .rep-tbl td { padding:10px 14px; border-bottom:1px solid rgba(255,255,255,.05); font-size:.9rem; vertical-align:middle; }
+    .rep-tbl tr:last-child td { border-bottom:none; }
+    .rep-tbl tbody tr:hover { background:rgba(255,255,255,.03); }
+    .rep-rank { width:38px; text-align:center; font-weight:700; color:var(--wc-silver); }
+    .rep-rank.top1 { color:#ffd24a; } .rep-rank.top2 { color:#cfd8dc; } .rep-rank.top3 { color:#e0a06a; }
+    .rep-player { font-weight:600; color:#fff; }
+    .rep-team { font-size:.78rem; color:var(--wc-silver); }
+    .rep-num { text-align:center; font-weight:700; font-size:1.05rem; width:70px; }
+    .rep-num .sub { font-size:.7rem; color:rgba(255,255,255,.4); font-weight:400; }
+    .rep-pill { display:inline-block; min-width:22px; text-align:center; padding:2px 8px; border-radius:6px; font-weight:700; font-size:.85rem; }
+    .rep-pill.goal { background:rgba(240,165,0,.15); color:#ffd24a; }
+    .rep-pill.yc   { background:rgba(245,200,40,.16); color:#ffd54f; }
+    .rep-pill.rc   { background:rgba(200,16,46,.18); color:#ff6b7a; }
+    .rep-card-icon { display:inline-block; width:13px; height:18px; border-radius:2px; vertical-align:middle; }
+    .rep-empty { text-align:center; padding:48px 20px; color:rgba(255,255,255,.45); }
+    .rep-empty .ic { font-size:2.6rem; opacity:.3; margin-bottom:10px; }
     .knockout-info { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 14px; padding: 20px; margin-bottom: 24px; }
     .knockout-stage-badge { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: .78rem; font-weight: 700; margin-bottom: 8px; }
 
@@ -143,6 +168,7 @@
         <li class="nav-item"><a class="nav-link" href="#" onclick="switchTab('groups');return false;">กลุ่ม</a></li>
         <li class="nav-item"><a class="nav-link" href="#" onclick="switchTab('schedule');return false;">โปรแกรม</a></li>
         <li class="nav-item"><a class="nav-link" href="#" onclick="switchTab('knockout');return false;">รอบน็อคเอาท์</a></li>
+        <li class="nav-item"><a class="nav-link" href="#" onclick="switchTab('reports');return false;">รายงาน</a></li>
         <li class="nav-item"><a class="nav-link" href="#" onclick="switchTab('venues');return false;">สนาม</a></li>
       </ul>
     </div>
@@ -169,6 +195,7 @@
       <li class="nav-item"><button class="nav-link active" onclick="switchTab('groups')"   id="tab-groups"><i class="fa fa-layer-group me-1"></i>กลุ่ม</button></li>
       <li class="nav-item"><button class="nav-link"        onclick="switchTab('schedule')" id="tab-schedule"><i class="fa fa-calendar me-1"></i>โปรแกรม</button></li>
       <li class="nav-item"><button class="nav-link"        onclick="switchTab('knockout')" id="tab-knockout"><i class="fa fa-trophy me-1"></i>รอบน็อคเอาท์</button></li>
+      <li class="nav-item"><button class="nav-link"        onclick="switchTab('reports')"  id="tab-reports"><i class="fa fa-ranking-star me-1"></i>รายงาน</button></li>
       <li class="nav-item"><button class="nav-link"        onclick="switchTab('venues')"   id="tab-venues"><i class="fa fa-map-marker-alt me-1"></i>สนาม</button></li>
     </ul>
   </div>
@@ -1059,6 +1086,30 @@
   </div>
 </div><!-- /pane-venues -->
 
+<!-- ═══ REPORTS ═══ -->
+<div id="pane-reports" style="display:none;">
+  <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3">
+    <div>
+      <h2 style="font-size:1.4rem;font-weight:800;margin:0;">📊 รายงานสถิติ</h2>
+      <div style="font-size:.82rem;color:var(--wc-silver);margin-top:2px;">ผู้ทำประตู · ใบเหลือง · ใบแดง — อัปเดตตามผลการแข่งขันจริง</div>
+    </div>
+    <button onclick="loadReports(true)" style="background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.2);color:#fff;padding:6px 16px;border-radius:8px;font-size:.8rem;cursor:pointer;">⟳ รีเฟรช</button>
+  </div>
+
+  <div class="rep-seg mb-3" id="rep-seg">
+    <button class="active" data-rep="scorers" onclick="showReport('scorers')"><i class="fa fa-futbol me-1"></i>ผู้ทำประตู</button>
+    <button data-rep="yellow" onclick="showReport('yellow')">🟨 ใบเหลือง</button>
+    <button data-rep="red" onclick="showReport('red')">🟥 ใบแดง</button>
+  </div>
+
+  <div class="rep-card">
+    <div id="rep-body">
+      <div class="rep-empty"><div class="ic">⏳</div><div>กำลังโหลดข้อมูล…</div></div>
+    </div>
+  </div>
+  <p style="font-size:.72rem;color:rgba(255,255,255,.35);margin-top:10px;text-align:center;">ข้อมูลสถิติดึงแบบเรียลไทม์จาก ESPN · นับเฉพาะนัดที่แข่งจบแล้ว</p>
+</div><!-- /pane-reports -->
+
 </div><!-- /container -->
 
 <footer>
@@ -1077,12 +1128,13 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script>
   function switchTab(name) {
-    ['groups','schedule','knockout','venues'].forEach(function(t) {
+    ['groups','schedule','knockout','reports','venues'].forEach(function(t) {
       document.getElementById('pane-' + t).style.display = (t === name) ? '' : 'none';
       document.getElementById('tab-' + t).classList.toggle('active', t === name);
     });
     var tabWrap = document.querySelector('.tab-nav-wrap');
     if (tabWrap) window.scrollTo({ top: tabWrap.offsetTop - 60, behavior: 'smooth' });
+    if (name === 'reports') loadReports(false);
   }
 
   // ── Flag rendering ──────────────────────────────────────────────
@@ -1347,6 +1399,146 @@
     } catch(e) {
       if (statusEl) statusEl.innerHTML = '⚠ โหลดข้อมูลไม่ได้ — ใช้ข้อมูล offline';
       console.warn('Standings refresh failed:', e);
+    }
+  }
+
+  // ── Reports: top scorers / cards (aggregated from ESPN match summaries) ──
+  var REP = { loaded:false, loading:false, view:'scorers', scorers:[], yellow:[], red:[] };
+
+  function escH(s){ return String(s||'').replace(/[&<>"]/g, function(c){ return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[c]; }); }
+
+  function showReport(which){
+    REP.view = which;
+    document.querySelectorAll('#rep-seg button').forEach(function(b){
+      b.classList.toggle('active', b.getAttribute('data-rep') === which);
+    });
+    renderReport();
+  }
+
+  function repRow(idx, item, kind){
+    var rc = idx===0?'top1':idx===1?'top2':idx===2?'top3':'';
+    var flag = item.fi ? '<span class="fi fi-'+item.fi+'" style="border-radius:2px;font-size:.95rem;margin-right:7px;vertical-align:middle;"></span>' : '';
+    var pillClass = kind==='scorers'?'goal':kind==='yellow'?'yc':'rc';
+    return '<tr>'+
+      '<td class="rep-rank '+rc+'">'+(idx+1)+'</td>'+
+      '<td>'+flag+'<span class="rep-player">'+escH(item.name)+'</span></td>'+
+      '<td class="rep-team">'+escH(item.team)+'</td>'+
+      '<td class="rep-num"><span class="rep-pill '+pillClass+'">'+item.count+'</span></td>'+
+      '</tr>';
+  }
+
+  function renderReport(){
+    var body = document.getElementById('rep-body');
+    if (!body) return;
+    if (REP.loading && !REP.loaded){
+      body.innerHTML = '<div class="rep-empty"><div class="ic">⏳</div><div>กำลังโหลดข้อมูล…</div></div>';
+      return;
+    }
+    var data = REP.view==='scorers'?REP.scorers : REP.view==='yellow'?REP.yellow : REP.red;
+    var head = REP.view==='scorers'?'ประตู' : REP.view==='yellow'?'ใบเหลือง':'ใบแดง';
+    if (!data.length){
+      var ic = REP.view==='scorers'?'⚽':REP.view==='yellow'?'🟨':'🟥';
+      body.innerHTML = '<div class="rep-empty"><div class="ic">'+ic+'</div><div>ยังไม่มีข้อมูล — รอผลการแข่งขัน</div></div>';
+      return;
+    }
+    var rows = data.slice(0,30).map(function(it,i){ return repRow(i,it,REP.view); }).join('');
+    body.innerHTML = '<table class="rep-tbl"><thead><tr>'+
+      '<th class="rep-rank">#</th><th>ผู้เล่น</th><th>ทีม</th><th style="text-align:center;">'+head+'</th>'+
+      '</tr></thead><tbody>'+rows+'</tbody></table>';
+  }
+
+  async function fetchPool(urls, limit){
+    var out = new Array(urls.length); var i = 0;
+    async function worker(){
+      while (i < urls.length){
+        var idx = i++;
+        try { out[idx] = await fetch(urls[idx]).then(function(r){return r.json();}); }
+        catch(e){ out[idx] = null; }
+      }
+    }
+    var ws = []; for (var w=0; w<limit; w++) ws.push(worker());
+    await Promise.all(ws);
+    return out;
+  }
+
+  function teamMeta(displayName){
+    var cfg = TC[(displayName||'').toLowerCase()] || {};
+    return { fi: cfg.fi || '', n: cfg.n || displayName || '' };
+  }
+
+  async function loadReports(force){
+    if (REP.loading) return;
+    if (REP.loaded && !force) return;
+    REP.loading = true;
+    if (force) { REP.loaded=false; REP.scorers=[]; REP.yellow=[]; REP.red=[]; }
+    renderReport();
+    try {
+      var sb = await fetch('https://site.api.espn.com/apis/site/v2/sports/soccer/fifa.world/scoreboard?dates=20260611-20260719')
+                 .then(function(r){return r.json();}).catch(function(){return null;});
+      var events = (sb && sb.events) || [];
+      // team id → meta, and list of completed event ids
+      var teamMap = {};
+      var ids = [];
+      events.forEach(function(ev){
+        var comp = ev.competitions && ev.competitions[0];
+        var comps = (comp && comp.competitors) || [];
+        comps.forEach(function(c){
+          if (c.team && c.team.id) teamMap[c.team.id] = teamMeta(c.team.displayName);
+        });
+        var completed = ev.status && ev.status.type && ev.status.type.completed;
+        if (completed) ids.push(ev.id);
+      });
+
+      var goalMap = {}, ycMap = {}, rcMap = {};
+      function bump(map, key, meta){
+        if (!map[key]) map[key] = { name:meta.name, team:meta.team, fi:meta.fi, count:0 };
+        map[key].count++;
+      }
+
+      if (ids.length){
+        var urls = ids.map(function(id){
+          return 'https://site.api.espn.com/apis/site/v2/sports/soccer/fifa.world/summary?event='+id;
+        });
+        var summaries = await fetchPool(urls, 6);
+        summaries.forEach(function(sum){
+          if (!sum) return;
+          var kevs = sum.keyEvents || [];
+          kevs.forEach(function(k){
+            if (k.shootout) return; // skip penalty shootout
+            var tTxt  = ((k.type && (k.type.text || k.type.name)) || '').toLowerCase();
+            var tType = ((k.type && k.type.type) || '').toLowerCase();
+            var part  = (k.participants && k.participants[0]) || null;
+            var ath   = part && part.athlete;
+            var pname = ath && (ath.displayName || ath.shortName || ath.fullName);
+            if (!pname) return;
+            var tname = (k.team && k.team.displayName) || '';
+            var tm    = teamMeta(tname);
+            var meta  = { name:pname, team:tm.n, fi:tm.fi };
+            var key   = pname + '|' + tname;
+
+            var isOwn  = /own.?goal/.test(tType) || /own goal/.test(tTxt);
+            var isGoal = (tType === 'goal' || k.scoringPlay === true || tTxt === 'goal' || /penalty.*scored/.test(tTxt));
+            if (isGoal && !isOwn) bump(goalMap, key, meta);
+
+            if (/red.?card/.test(tType) || /red card/.test(tTxt) || /second yellow|yellow card to red/.test(tTxt)) bump(rcMap, key, meta);
+            else if (/yellow.?card/.test(tType) || /yellow card/.test(tTxt)) bump(ycMap, key, meta);
+          });
+        });
+      }
+
+      function toSorted(map){
+        return Object.keys(map).map(function(k){return map[k];})
+          .sort(function(a,b){ return b.count - a.count || a.name.localeCompare(b.name); });
+      }
+      REP.scorers = toSorted(goalMap);
+      REP.yellow  = toSorted(ycMap);
+      REP.red     = toSorted(rcMap);
+      REP.loaded = true;
+    } catch(e){
+      console.warn('Reports load failed:', e);
+    } finally {
+      REP.loading = false;
+      renderReport();
     }
   }
 
