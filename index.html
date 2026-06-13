@@ -101,6 +101,19 @@
       .hero h1 { font-size: 1.7rem; }
     }
     @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.2} }
+    /* ── Venue Cards (new) ── */
+    .venue-card-new { background:var(--card-bg); border:1px solid var(--card-border); border-radius:14px; overflow:hidden; transition:transform .2s,border-color .2s; display:flex; flex-direction:column; height:100%; }
+    .venue-card-new:hover { border-color:rgba(240,165,0,.4); transform:translateY(-2px); }
+    .venue-img-wrap { height:155px; overflow:hidden; background:linear-gradient(135deg,#0d1f40,#0a1628); position:relative; flex-shrink:0; }
+    .venue-img-ph { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); font-size:3rem; opacity:.15; pointer-events:none; }
+    .venue-img { width:100%; height:100%; object-fit:cover; display:block; position:relative; z-index:1; transition:transform .35s; }
+    .venue-card-new:hover .venue-img { transform:scale(1.06); }
+    .venue-info-new { padding:12px 14px 14px; flex:1; display:flex; flex-direction:column; }
+    .venue-badge { display:inline-block; font-size:.62rem; font-weight:700; letter-spacing:.8px; text-transform:uppercase; padding:2px 8px; border-radius:5px; margin-bottom:5px; }
+    .venue-cap-row { font-size:.78rem; color:var(--wc-silver); margin-top:4px; }
+    .venue-coords { font-size:.68rem; color:rgba(255,255,255,.3); margin-top:3px; font-family:monospace; }
+    .venue-map-btn { display:inline-flex; align-items:center; gap:5px; margin-top:auto; padding-top:10px; color:var(--wc-gold); font-size:.76rem; font-weight:600; text-decoration:none; transition:color .2s; }
+    .venue-map-btn:hover { color:#ffe082; }
     /* ── Knockout Bracket ── */
     .ko-mc     { background:rgba(240,165,0,.08); border:1px solid rgba(240,165,0,.32); border-radius:8px; padding:5px 8px; width:100%; }
     .ko-mc-tbd { background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.1); border-radius:8px; padding:5px 8px; width:100%; }
@@ -785,30 +798,257 @@
 
 <!-- ═══ VENUES ═══ -->
 <div id="pane-venues" style="display:none;">
-  <p style="color:var(--wc-silver);font-size:.88rem;margin-bottom:20px;">16 สนามแข่งขันใน 3 ประเทศเจ้าภาพ</p>
+  <p style="color:var(--wc-silver);font-size:.88rem;margin-bottom:20px;">16 สนามแข่งขันใน 3 ประเทศเจ้าภาพ &nbsp;·&nbsp; คลิก <i class="fa fa-map-marker-alt" style="color:var(--wc-gold);"></i> เพื่อดูแผนที่</p>
   <div class="row g-3">
 
-    <div class="col-12"><h6 style="color:var(--wc-gold);border-bottom:1px solid var(--card-border);padding-bottom:8px;"><span style="font-size:1.4rem;">🇺🇸</span> United States — 11 สนาม</h6></div>
-    <div class="col-md-6 col-lg-4"><div class="venue-card"><div class="venue-country" style="color:#3f80ea;">USA</div><div class="venue-name">MetLife Stadium ⭐ รอบชิง</div><div class="venue-city">East Rutherford, New Jersey · 82,500 ที่นั่ง</div></div></div>
-    <div class="col-md-6 col-lg-4"><div class="venue-card"><div class="venue-country" style="color:#3f80ea;">USA</div><div class="venue-name">AT&amp;T Stadium</div><div class="venue-city">Arlington (Dallas), Texas · 80,000 ที่นั่ง</div></div></div>
-    <div class="col-md-6 col-lg-4"><div class="venue-card"><div class="venue-country" style="color:#3f80ea;">USA</div><div class="venue-name">SoFi Stadium</div><div class="venue-city">Inglewood (Los Angeles), California · 70,240 ที่นั่ง</div></div></div>
-    <div class="col-md-6 col-lg-4"><div class="venue-card"><div class="venue-country" style="color:#3f80ea;">USA</div><div class="venue-name">Levi's Stadium</div><div class="venue-city">Santa Clara (San Francisco Bay Area), CA · 68,500 ที่นั่ง</div></div></div>
-    <div class="col-md-6 col-lg-4"><div class="venue-card"><div class="venue-country" style="color:#3f80ea;">USA</div><div class="venue-name">Hard Rock Stadium</div><div class="venue-city">Miami Gardens, Florida · 65,000 ที่นั่ง</div></div></div>
-    <div class="col-md-6 col-lg-4"><div class="venue-card"><div class="venue-country" style="color:#3f80ea;">USA</div><div class="venue-name">Lincoln Financial Field</div><div class="venue-city">Philadelphia, Pennsylvania · 69,800 ที่นั่ง</div></div></div>
-    <div class="col-md-6 col-lg-4"><div class="venue-card"><div class="venue-country" style="color:#3f80ea;">USA</div><div class="venue-name">Arrowhead Stadium</div><div class="venue-city">Kansas City, Missouri · 76,416 ที่นั่ง</div></div></div>
-    <div class="col-md-6 col-lg-4"><div class="venue-card"><div class="venue-country" style="color:#3f80ea;">USA</div><div class="venue-name">Gillette Stadium</div><div class="venue-city">Foxborough (Boston), Massachusetts · 65,878 ที่นั่ง</div></div></div>
-    <div class="col-md-6 col-lg-4"><div class="venue-card"><div class="venue-country" style="color:#3f80ea;">USA</div><div class="venue-name">Lumen Field</div><div class="venue-city">Seattle, Washington · 69,000 ที่นั่ง</div></div></div>
-    <div class="col-md-6 col-lg-4"><div class="venue-card"><div class="venue-country" style="color:#3f80ea;">USA</div><div class="venue-name">Mercedes-Benz Stadium</div><div class="venue-city">Atlanta, Georgia · 71,000 ที่นั่ง</div></div></div>
-    <div class="col-md-6 col-lg-4"><div class="venue-card"><div class="venue-country" style="color:#3f80ea;">USA</div><div class="venue-name">NRG Stadium</div><div class="venue-city">Houston, Texas · 72,220 ที่นั่ง</div></div></div>
+    <!-- ══ USA ══ -->
+    <div class="col-12"><h6 style="color:var(--wc-gold);border-bottom:1px solid var(--card-border);padding-bottom:8px;"><span class="fi fi-us" style="font-size:1.1rem;vertical-align:middle;border-radius:2px;"></span> &nbsp;United States — 11 สนาม</h6></div>
 
-    <div class="col-12 mt-2"><h6 style="color:var(--wc-gold);border-bottom:1px solid var(--card-border);padding-bottom:8px;"><span style="font-size:1.4rem;">🇲🇽</span> Mexico — 3 สนาม</h6></div>
-    <div class="col-md-6 col-lg-4"><div class="venue-card"><div class="venue-country" style="color:#4caf50;">MEX</div><div class="venue-name">Estadio Azteca ⭐ นัดเปิด</div><div class="venue-city">Mexico City · 87,523 ที่นั่ง (ใหญ่สุดในทัวร์นาเมนต์)</div></div></div>
-    <div class="col-md-6 col-lg-4"><div class="venue-card"><div class="venue-country" style="color:#4caf50;">MEX</div><div class="venue-name">Estadio BBVA</div><div class="venue-city">Monterrey, Nuevo León · 53,500 ที่นั่ง</div></div></div>
-    <div class="col-md-6 col-lg-4"><div class="venue-card"><div class="venue-country" style="color:#4caf50;">MEX</div><div class="venue-name">Estadio Akron</div><div class="venue-city">Guadalajara, Jalisco · 49,850 ที่นั่ง</div></div></div>
+    <div class="col-md-6 col-lg-4">
+      <div class="venue-card-new">
+        <div class="venue-img-wrap"><div class="venue-img-ph">🏟️</div>
+          <img src="https://en.wikipedia.org/w/index.php?title=Special:Redirect/file/MetLife_Stadium_in_May_2014.jpg&width=480" alt="MetLife Stadium" class="venue-img" onerror="this.style.display='none'"></div>
+        <div class="venue-info-new">
+          <span class="venue-badge" style="background:rgba(63,128,234,.15);color:#64b5f6;border:1px solid rgba(63,128,234,.25);">USA</span>
+          <div class="venue-name">MetLife Stadium <span style="color:var(--wc-gold);font-size:.8rem;">⭐ รอบชิง</span></div>
+          <div class="venue-city">East Rutherford, New Jersey</div>
+          <div class="venue-cap-row"><i class="fa fa-users me-1"></i>82,500 ที่นั่ง</div>
+          <div class="venue-coords">📍 40.8135°N, 74.0745°W</div>
+          <a href="https://www.google.com/maps?q=40.8135,-74.0745" target="_blank" rel="noopener" class="venue-map-btn"><i class="fa fa-map-marker-alt"></i> ดูบนแผนที่</a>
+        </div>
+      </div>
+    </div>
 
-    <div class="col-12 mt-2"><h6 style="color:var(--wc-gold);border-bottom:1px solid var(--card-border);padding-bottom:8px;"><span style="font-size:1.4rem;">🇨🇦</span> Canada — 2 สนาม</h6></div>
-    <div class="col-md-6 col-lg-4"><div class="venue-card"><div class="venue-country" style="color:#ef5350;">CAN</div><div class="venue-name">BMO Field</div><div class="venue-city">Toronto, Ontario · 45,000 ที่นั่ง</div></div></div>
-    <div class="col-md-6 col-lg-4"><div class="venue-card"><div class="venue-country" style="color:#ef5350;">CAN</div><div class="venue-name">BC Place</div><div class="venue-city">Vancouver, British Columbia · 54,500 ที่นั่ง</div></div></div>
+    <div class="col-md-6 col-lg-4">
+      <div class="venue-card-new">
+        <div class="venue-img-wrap"><div class="venue-img-ph">🏟️</div>
+          <img src="https://en.wikipedia.org/w/index.php?title=Special:Redirect/file/AT%26T_Stadium_exterior.jpg&width=480" alt="AT&T Stadium" class="venue-img" onerror="this.style.display='none'"></div>
+        <div class="venue-info-new">
+          <span class="venue-badge" style="background:rgba(63,128,234,.15);color:#64b5f6;border:1px solid rgba(63,128,234,.25);">USA</span>
+          <div class="venue-name">AT&amp;T Stadium</div>
+          <div class="venue-city">Arlington (Dallas), Texas</div>
+          <div class="venue-cap-row"><i class="fa fa-users me-1"></i>80,000 ที่นั่ง</div>
+          <div class="venue-coords">📍 32.7479°N, 97.0929°W</div>
+          <a href="https://www.google.com/maps?q=32.7479,-97.0929" target="_blank" rel="noopener" class="venue-map-btn"><i class="fa fa-map-marker-alt"></i> ดูบนแผนที่</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-6 col-lg-4">
+      <div class="venue-card-new">
+        <div class="venue-img-wrap"><div class="venue-img-ph">🏟️</div>
+          <img src="https://en.wikipedia.org/w/index.php?title=Special:Redirect/file/SoFi_Stadium.jpg&width=480" alt="SoFi Stadium" class="venue-img" onerror="this.style.display='none'"></div>
+        <div class="venue-info-new">
+          <span class="venue-badge" style="background:rgba(63,128,234,.15);color:#64b5f6;border:1px solid rgba(63,128,234,.25);">USA</span>
+          <div class="venue-name">SoFi Stadium <span style="color:var(--wc-silver);font-size:.78rem;">ชิงอันดับ 3</span></div>
+          <div class="venue-city">Inglewood (Los Angeles), California</div>
+          <div class="venue-cap-row"><i class="fa fa-users me-1"></i>70,240 ที่นั่ง</div>
+          <div class="venue-coords">📍 33.9535°N, 118.3392°W</div>
+          <a href="https://www.google.com/maps?q=33.9535,-118.3392" target="_blank" rel="noopener" class="venue-map-btn"><i class="fa fa-map-marker-alt"></i> ดูบนแผนที่</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-6 col-lg-4">
+      <div class="venue-card-new">
+        <div class="venue-img-wrap"><div class="venue-img-ph">🏟️</div>
+          <img src="https://en.wikipedia.org/w/index.php?title=Special:Redirect/file/Levi%27s_Stadium_aerial_view.jpg&width=480" alt="Levi's Stadium" class="venue-img" onerror="this.style.display='none'"></div>
+        <div class="venue-info-new">
+          <span class="venue-badge" style="background:rgba(63,128,234,.15);color:#64b5f6;border:1px solid rgba(63,128,234,.25);">USA</span>
+          <div class="venue-name">Levi's Stadium</div>
+          <div class="venue-city">Santa Clara (San Francisco), California</div>
+          <div class="venue-cap-row"><i class="fa fa-users me-1"></i>68,500 ที่นั่ง</div>
+          <div class="venue-coords">📍 37.4034°N, 121.9697°W</div>
+          <a href="https://www.google.com/maps?q=37.4034,-121.9697" target="_blank" rel="noopener" class="venue-map-btn"><i class="fa fa-map-marker-alt"></i> ดูบนแผนที่</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-6 col-lg-4">
+      <div class="venue-card-new">
+        <div class="venue-img-wrap"><div class="venue-img-ph">🏟️</div>
+          <img src="https://en.wikipedia.org/w/index.php?title=Special:Redirect/file/Hard_Rock_Stadium.jpg&width=480" alt="Hard Rock Stadium" class="venue-img" onerror="this.style.display='none'"></div>
+        <div class="venue-info-new">
+          <span class="venue-badge" style="background:rgba(63,128,234,.15);color:#64b5f6;border:1px solid rgba(63,128,234,.25);">USA</span>
+          <div class="venue-name">Hard Rock Stadium</div>
+          <div class="venue-city">Miami Gardens, Florida</div>
+          <div class="venue-cap-row"><i class="fa fa-users me-1"></i>65,000 ที่นั่ง</div>
+          <div class="venue-coords">📍 25.9580°N, 80.2389°W</div>
+          <a href="https://www.google.com/maps?q=25.958,-80.2389" target="_blank" rel="noopener" class="venue-map-btn"><i class="fa fa-map-marker-alt"></i> ดูบนแผนที่</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-6 col-lg-4">
+      <div class="venue-card-new">
+        <div class="venue-img-wrap"><div class="venue-img-ph">🏟️</div>
+          <img src="https://en.wikipedia.org/w/index.php?title=Special:Redirect/file/Lincoln_Financial_Field.jpg&width=480" alt="Lincoln Financial Field" class="venue-img" onerror="this.style.display='none'"></div>
+        <div class="venue-info-new">
+          <span class="venue-badge" style="background:rgba(63,128,234,.15);color:#64b5f6;border:1px solid rgba(63,128,234,.25);">USA</span>
+          <div class="venue-name">Lincoln Financial Field</div>
+          <div class="venue-city">Philadelphia, Pennsylvania</div>
+          <div class="venue-cap-row"><i class="fa fa-users me-1"></i>69,800 ที่นั่ง</div>
+          <div class="venue-coords">📍 39.9008°N, 75.1675°W</div>
+          <a href="https://www.google.com/maps?q=39.9008,-75.1675" target="_blank" rel="noopener" class="venue-map-btn"><i class="fa fa-map-marker-alt"></i> ดูบนแผนที่</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-6 col-lg-4">
+      <div class="venue-card-new">
+        <div class="venue-img-wrap"><div class="venue-img-ph">🏟️</div>
+          <img src="https://en.wikipedia.org/w/index.php?title=Special:Redirect/file/GEHA_Field_at_Arrowhead_Stadium.jpg&width=480" alt="Arrowhead Stadium" class="venue-img" onerror="this.style.display='none'"></div>
+        <div class="venue-info-new">
+          <span class="venue-badge" style="background:rgba(63,128,234,.15);color:#64b5f6;border:1px solid rgba(63,128,234,.25);">USA</span>
+          <div class="venue-name">Arrowhead Stadium</div>
+          <div class="venue-city">Kansas City, Missouri</div>
+          <div class="venue-cap-row"><i class="fa fa-users me-1"></i>76,416 ที่นั่ง</div>
+          <div class="venue-coords">📍 39.0490°N, 94.4840°W</div>
+          <a href="https://www.google.com/maps?q=39.049,-94.484" target="_blank" rel="noopener" class="venue-map-btn"><i class="fa fa-map-marker-alt"></i> ดูบนแผนที่</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-6 col-lg-4">
+      <div class="venue-card-new">
+        <div class="venue-img-wrap"><div class="venue-img-ph">🏟️</div>
+          <img src="https://en.wikipedia.org/w/index.php?title=Special:Redirect/file/Gillette_Stadium.jpg&width=480" alt="Gillette Stadium" class="venue-img" onerror="this.style.display='none'"></div>
+        <div class="venue-info-new">
+          <span class="venue-badge" style="background:rgba(63,128,234,.15);color:#64b5f6;border:1px solid rgba(63,128,234,.25);">USA</span>
+          <div class="venue-name">Gillette Stadium</div>
+          <div class="venue-city">Foxborough (Boston), Massachusetts</div>
+          <div class="venue-cap-row"><i class="fa fa-users me-1"></i>65,878 ที่นั่ง</div>
+          <div class="venue-coords">📍 42.0909°N, 71.2643°W</div>
+          <a href="https://www.google.com/maps?q=42.0909,-71.2643" target="_blank" rel="noopener" class="venue-map-btn"><i class="fa fa-map-marker-alt"></i> ดูบนแผนที่</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-6 col-lg-4">
+      <div class="venue-card-new">
+        <div class="venue-img-wrap"><div class="venue-img-ph">🏟️</div>
+          <img src="https://en.wikipedia.org/w/index.php?title=Special:Redirect/file/Lumen_Field.jpg&width=480" alt="Lumen Field" class="venue-img" onerror="this.style.display='none'"></div>
+        <div class="venue-info-new">
+          <span class="venue-badge" style="background:rgba(63,128,234,.15);color:#64b5f6;border:1px solid rgba(63,128,234,.25);">USA</span>
+          <div class="venue-name">Lumen Field</div>
+          <div class="venue-city">Seattle, Washington</div>
+          <div class="venue-cap-row"><i class="fa fa-users me-1"></i>69,000 ที่นั่ง</div>
+          <div class="venue-coords">📍 47.5952°N, 122.3316°W</div>
+          <a href="https://www.google.com/maps?q=47.5952,-122.3316" target="_blank" rel="noopener" class="venue-map-btn"><i class="fa fa-map-marker-alt"></i> ดูบนแผนที่</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-6 col-lg-4">
+      <div class="venue-card-new">
+        <div class="venue-img-wrap"><div class="venue-img-ph">🏟️</div>
+          <img src="https://en.wikipedia.org/w/index.php?title=Special:Redirect/file/Mercedes-Benz_Stadium.jpg&width=480" alt="Mercedes-Benz Stadium" class="venue-img" onerror="this.style.display='none'"></div>
+        <div class="venue-info-new">
+          <span class="venue-badge" style="background:rgba(63,128,234,.15);color:#64b5f6;border:1px solid rgba(63,128,234,.25);">USA</span>
+          <div class="venue-name">Mercedes-Benz Stadium</div>
+          <div class="venue-city">Atlanta, Georgia</div>
+          <div class="venue-cap-row"><i class="fa fa-users me-1"></i>71,000 ที่นั่ง</div>
+          <div class="venue-coords">📍 33.7555°N, 84.4009°W</div>
+          <a href="https://www.google.com/maps?q=33.7555,-84.4009" target="_blank" rel="noopener" class="venue-map-btn"><i class="fa fa-map-marker-alt"></i> ดูบนแผนที่</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-6 col-lg-4">
+      <div class="venue-card-new">
+        <div class="venue-img-wrap"><div class="venue-img-ph">🏟️</div>
+          <img src="https://en.wikipedia.org/w/index.php?title=Special:Redirect/file/NRG_Stadium.jpg&width=480" alt="NRG Stadium" class="venue-img" onerror="this.style.display='none'"></div>
+        <div class="venue-info-new">
+          <span class="venue-badge" style="background:rgba(63,128,234,.15);color:#64b5f6;border:1px solid rgba(63,128,234,.25);">USA</span>
+          <div class="venue-name">NRG Stadium</div>
+          <div class="venue-city">Houston, Texas</div>
+          <div class="venue-cap-row"><i class="fa fa-users me-1"></i>72,220 ที่นั่ง</div>
+          <div class="venue-coords">📍 29.6847°N, 95.4107°W</div>
+          <a href="https://www.google.com/maps?q=29.6847,-95.4107" target="_blank" rel="noopener" class="venue-map-btn"><i class="fa fa-map-marker-alt"></i> ดูบนแผนที่</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ MEXICO ══ -->
+    <div class="col-12 mt-2"><h6 style="color:var(--wc-gold);border-bottom:1px solid var(--card-border);padding-bottom:8px;"><span class="fi fi-mx" style="font-size:1.1rem;vertical-align:middle;border-radius:2px;"></span> &nbsp;Mexico — 3 สนาม</h6></div>
+
+    <div class="col-md-6 col-lg-4">
+      <div class="venue-card-new">
+        <div class="venue-img-wrap"><div class="venue-img-ph">🏟️</div>
+          <img src="https://en.wikipedia.org/w/index.php?title=Special:Redirect/file/Azteca_stadium.jpg&width=480" alt="Estadio Azteca" class="venue-img" onerror="this.style.display='none'"></div>
+        <div class="venue-info-new">
+          <span class="venue-badge" style="background:rgba(76,175,80,.15);color:#81c784;border:1px solid rgba(76,175,80,.3);">MEX</span>
+          <div class="venue-name">Estadio Azteca <span style="color:var(--wc-gold);font-size:.8rem;">⭐ นัดเปิดสนาม</span></div>
+          <div class="venue-city">Mexico City</div>
+          <div class="venue-cap-row"><i class="fa fa-users me-1"></i>87,523 ที่นั่ง <span style="color:var(--wc-gold);font-size:.7rem;">(ใหญ่สุด)</span></div>
+          <div class="venue-coords">📍 19.3029°N, 99.1505°W</div>
+          <a href="https://www.google.com/maps?q=19.3029,-99.1505" target="_blank" rel="noopener" class="venue-map-btn"><i class="fa fa-map-marker-alt"></i> ดูบนแผนที่</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-6 col-lg-4">
+      <div class="venue-card-new">
+        <div class="venue-img-wrap"><div class="venue-img-ph">🏟️</div>
+          <img src="https://en.wikipedia.org/w/index.php?title=Special:Redirect/file/Estadio_BBVA_2019.jpg&width=480" alt="Estadio BBVA" class="venue-img" onerror="this.style.display='none'"></div>
+        <div class="venue-info-new">
+          <span class="venue-badge" style="background:rgba(76,175,80,.15);color:#81c784;border:1px solid rgba(76,175,80,.3);">MEX</span>
+          <div class="venue-name">Estadio BBVA</div>
+          <div class="venue-city">Monterrey, Nuevo León</div>
+          <div class="venue-cap-row"><i class="fa fa-users me-1"></i>53,500 ที่นั่ง</div>
+          <div class="venue-coords">📍 25.6696°N, 100.2464°W</div>
+          <a href="https://www.google.com/maps?q=25.6696,-100.2464" target="_blank" rel="noopener" class="venue-map-btn"><i class="fa fa-map-marker-alt"></i> ดูบนแผนที่</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-6 col-lg-4">
+      <div class="venue-card-new">
+        <div class="venue-img-wrap"><div class="venue-img-ph">🏟️</div>
+          <img src="https://en.wikipedia.org/w/index.php?title=Special:Redirect/file/Estadio_Akron.jpg&width=480" alt="Estadio Akron" class="venue-img" onerror="this.style.display='none'"></div>
+        <div class="venue-info-new">
+          <span class="venue-badge" style="background:rgba(76,175,80,.15);color:#81c784;border:1px solid rgba(76,175,80,.3);">MEX</span>
+          <div class="venue-name">Estadio Akron</div>
+          <div class="venue-city">Guadalajara, Jalisco</div>
+          <div class="venue-cap-row"><i class="fa fa-users me-1"></i>49,850 ที่นั่ง</div>
+          <div class="venue-coords">📍 20.6699°N, 103.4678°W</div>
+          <a href="https://www.google.com/maps?q=20.6699,-103.4678" target="_blank" rel="noopener" class="venue-map-btn"><i class="fa fa-map-marker-alt"></i> ดูบนแผนที่</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ CANADA ══ -->
+    <div class="col-12 mt-2"><h6 style="color:var(--wc-gold);border-bottom:1px solid var(--card-border);padding-bottom:8px;"><span class="fi fi-ca" style="font-size:1.1rem;vertical-align:middle;border-radius:2px;"></span> &nbsp;Canada — 2 สนาม</h6></div>
+
+    <div class="col-md-6 col-lg-4">
+      <div class="venue-card-new">
+        <div class="venue-img-wrap"><div class="venue-img-ph">🏟️</div>
+          <img src="https://en.wikipedia.org/w/index.php?title=Special:Redirect/file/BMO_Field.jpg&width=480" alt="BMO Field" class="venue-img" onerror="this.style.display='none'"></div>
+        <div class="venue-info-new">
+          <span class="venue-badge" style="background:rgba(239,83,80,.15);color:#ef9a9a;border:1px solid rgba(239,83,80,.3);">CAN</span>
+          <div class="venue-name">BMO Field</div>
+          <div class="venue-city">Toronto, Ontario</div>
+          <div class="venue-cap-row"><i class="fa fa-users me-1"></i>45,000 ที่นั่ง</div>
+          <div class="venue-coords">📍 43.6333°N, 79.4186°W</div>
+          <a href="https://www.google.com/maps?q=43.6333,-79.4186" target="_blank" rel="noopener" class="venue-map-btn"><i class="fa fa-map-marker-alt"></i> ดูบนแผนที่</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-6 col-lg-4">
+      <div class="venue-card-new">
+        <div class="venue-img-wrap"><div class="venue-img-ph">🏟️</div>
+          <img src="https://en.wikipedia.org/w/index.php?title=Special:Redirect/file/BC_Place_stadium.jpg&width=480" alt="BC Place" class="venue-img" onerror="this.style.display='none'"></div>
+        <div class="venue-info-new">
+          <span class="venue-badge" style="background:rgba(239,83,80,.15);color:#ef9a9a;border:1px solid rgba(239,83,80,.3);">CAN</span>
+          <div class="venue-name">BC Place</div>
+          <div class="venue-city">Vancouver, British Columbia</div>
+          <div class="venue-cap-row"><i class="fa fa-users me-1"></i>54,500 ที่นั่ง</div>
+          <div class="venue-coords">📍 49.2767°N, 123.1120°W</div>
+          <a href="https://www.google.com/maps?q=49.2767,-123.112" target="_blank" rel="noopener" class="venue-map-btn"><i class="fa fa-map-marker-alt"></i> ดูบนแผนที่</a>
+        </div>
+      </div>
+    </div>
 
   </div>
 </div><!-- /pane-venues -->
