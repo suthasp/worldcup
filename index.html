@@ -1321,7 +1321,59 @@
     });
   }
 
-  // ── Real-time standings: Standings API + Scoreboard live patch ──
+  // ── Merge event lists by id (later list wins — used to overlay live data) ──
+  function mergeEvents(a, b) {
+    var map = {};
+    (a || []).forEach(function(e){ map[e.id] = e; });
+    (b || []).forEach(function(e){ map[e.id] = e; });
+    return Object.keys(map).map(function(k){ return map[k]; });
+  }
+
+  // ── Build group standings from ACTUAL match results (ignores ESPN's
+  //    sometimes-phantom standings API; counts only real played/live matches) ──
+  function buildGroupsFromResults(events) {
+    var gmaps = []; for (var i = 0; i < 12; i++) gmaps.push({});
+    // Seed every team into its group (dedupe aliases by canonical name)
+    Object.keys(TC).forEach(function(k){
+      var c = TC[k]; if (c.g === undefined) return;
+      if (!gmaps[c.g][c.n]) gmaps[c.g][c.n] =
+        { fi:c.fi, n:c.n, host:!!c.host, P:0,W:0,D:0,L:0,GF:0,GA:0,Pts:0, live:false };
+    });
+    (events || []).forEach(function(ev){
+      var st = ev.status && ev.status.type; if (!st) return;
+      var isDone = st.completed, isLive = st.state === 'in';
+      if (!isDone && !isLive) return;
+      var comp = ev.competitions && ev.competitions[0];
+      var cs = (comp && comp.competitors) || []; if (cs.length < 2) return;
+      var home = cs.find(function(c){return c.homeAway==='home';}) || cs[0];
+      var away = cs.find(function(c){return c.homeAway==='away';}) || cs[1];
+      var hc = TC[((home.team && home.team.displayName) || '').toLowerCase()];
+      var ac = TC[((away.team && away.team.displayName) || '').toLowerCase()];
+      if (!hc || !ac || hc.g === undefined || hc.g !== ac.g) return; // same group only (skips knockouts)
+      var H = gmaps[hc.g][hc.n], A = gmaps[ac.g][ac.n]; if (!H || !A) return;
+      var hs = parseInt(home.score) || 0, as = parseInt(away.score) || 0;
+      H.P++; A.P++; H.GF += hs; H.GA += as; A.GF += as; A.GA += hs;
+      if (hs > as) { H.W++; A.L++; H.Pts += 3; }
+      else if (hs < as) { A.W++; H.L++; A.Pts += 3; }
+      else { H.D++; A.D++; H.Pts++; A.Pts++; }
+      if (isLive) { H.live = true; A.live = true; }
+    });
+    return gmaps.map(function(gm){
+      var hasLive = false;
+      var entries = Object.keys(gm).map(function(k){
+        var t = gm[k]; if (t.live) hasLive = true;
+        return { team:{displayName:t.n}, _fi:t.fi, _n:t.n, _host:t.host, _livePatched:t.live,
+          stats:[
+            {name:'gamesPlayed',value:t.P},{name:'wins',value:t.W},{name:'ties',value:t.D},
+            {name:'losses',value:t.L},{name:'pointDifferential',value:t.GF-t.GA},
+            {name:'pointsFor',value:t.GF},{name:'points',value:t.Pts}
+          ] };
+      });
+      return { _hasLive:hasLive, standings:{ entries:entries } };
+    });
+  }
+
+  // ── Real-time standings: computed from live + finished results ──
   async function refreshStandings() {
     var statusEl = document.getElementById('standings-status');
     try {
@@ -1335,15 +1387,15 @@
       var scoreboardData = results[1];
       var fullSchedule   = results[2];
 
-      var groups = (standingsData.children && standingsData.children.length) ? standingsData.children :
-                   (standingsData.standings && standingsData.standings.groups) ? standingsData.standings.groups : [];
-
-      // Patch in-progress matches into standings (from today's live scoreboard)
-      if (scoreboardData && scoreboardData.events) {
-        scoreboardData.events.forEach(function(ev) {
-          var state = ev.status && ev.status.type && ev.status.type.state;
-          if (state === 'in') patchLiveMatch(groups, ev);
-        });
+      // Standings computed from real results (range schedule + today's live overlay).
+      var allEvents = mergeEvents(fullSchedule && fullSchedule.events, scoreboardData && scoreboardData.events);
+      var groups;
+      if (allEvents.length) {
+        groups = buildGroupsFromResults(allEvents);
+      } else {
+        // Fallback to ESPN standings API if scoreboards are unavailable
+        groups = (standingsData.children && standingsData.children.length) ? standingsData.children :
+                 (standingsData.standings && standingsData.standings.groups) ? standingsData.standings.groups : [];
       }
 
       // Update schedule cards: full range first (all finished results),
@@ -1384,12 +1436,12 @@
           var l   = getStat(entry,'losses');
           var gd  = getStat(entry,'pointDifferential');
           var pts = getStat(entry,'points');
-          var fi  = cfg.fi || 'xx';
-          var dn  = cfg.n || tName;
+          var fi  = entry._fi || cfg.fi || 'xx';
+          var dn  = entry._n  || cfg.n  || tName;
           var posNum   = anyPlayed ? (idx+1) : '-';
           var posClass = (anyPlayed && idx < 2) ? ' class="pos-'+(idx+1)+'"' : '';
           var gdStr    = gd > 0 ? '+'+gd : String(gd);
-          var host     = cfg.host ? ' <span class="host-badge">HOST</span>' : '';
+          var host     = (entry._host || cfg.host) ? ' <span class="host-badge">HOST</span>' : '';
           var liveTag  = entry._livePatched ? ' <span style="color:#f44;font-size:.65rem;font-weight:700;">●</span>' : '';
           var nm       = (anyPlayed && idx < 2) ? '<b>'+dn+'</b>' : dn;
           return '<tr'+posClass+'><td class="pos-num">'+posNum+'</td>'+
