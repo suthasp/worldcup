@@ -82,6 +82,15 @@
     .match-time { font-size: .8rem; color: var(--wc-gold); font-weight: 700; }
     .match-meta { margin-top: 8px; display: flex; gap: 14px; font-size: .75rem; color: rgba(255,255,255,.45); flex-wrap: wrap; }
     .match-meta i { margin-right: 4px; }
+    /* Goal scorers row */
+    .match-goals { display: flex; justify-content: space-between; gap: 12px; margin-top: 8px; padding-top: 8px; border-top: 1px solid rgba(255,255,255,.06); }
+    .mg-col { display: flex; flex-direction: column; gap: 3px; font-size: .73rem; color: var(--wc-silver); flex: 1; min-width: 0; }
+    .mg-col.mg-right { text-align: right; align-items: flex-end; }
+    .mg-item { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+    .mg-item .fa-futbol { font-size: .6rem; opacity: .5; margin-right: 4px; }
+    .mg-min { color: var(--wc-gold); font-weight: 600; }
+    .mg-og, .mg-pen { font-size: .64rem; opacity: .85; }
+    .mg-og { color: #ff9aa2; } .mg-pen { color: var(--wc-gold); }
     .group-tag { font-size: .72rem; background: rgba(26,58,110,.6); color: #90caf9; padding: 2px 8px; border-radius: 10px; font-weight: 600; border: 1px solid rgba(144,202,249,.2); }
 
     .bracket-wrap { overflow-x: auto; padding-bottom: 10px; }
@@ -1403,6 +1412,9 @@
       if (fullSchedule && fullSchedule.events)   updateScheduleCards(fullSchedule.events);
       if (scoreboardData && scoreboardData.events) updateScheduleCards(scoreboardData.events);
 
+      // Inject goal scorers + minutes into finished/live match cards (fire-and-forget)
+      if (allEvents.length) updateMatchGoals(allEvents);
+
       var tbodies = document.querySelectorAll('#pane-groups .standings-table tbody');
       var headers = document.querySelectorAll('#pane-groups .group-title');
       var liveGroups = [];
@@ -1557,10 +1569,8 @@
       }
 
       if (ids.length){
-        var urls = ids.map(function(id){
-          return 'https://site.api.espn.com/apis/site/v2/sports/soccer/fifa.world/summary?event='+id;
-        });
-        var summaries = await fetchPool(urls, 6);
+        var sumMap = await getMatchSummaries(events);          // shared cache w/ schedule scorers
+        var summaries = Object.keys(sumMap).map(function(id){ return sumMap[id]; });
         summaries.forEach(function(sum){
           if (!sum) return;
           var kevs = sum.keyEvents || [];
@@ -1605,6 +1615,108 @@
       REP.loading = false;
       renderReport();
     }
+  }
+
+  // ── Shared match-summary cache (completed cached forever, live refetched) ──
+  var SUMMARY_CACHE = {};
+  async function getMatchSummaries(events) {
+    var ids = [], need = [];
+    (events || []).forEach(function(e){
+      var t = e.status && e.status.type; if (!t) return;
+      var live = t.state === 'in', done = t.completed;
+      if (!live && !done) return;
+      ids.push(e.id);
+      if (live || !SUMMARY_CACHE[e.id]) need.push(e.id);
+    });
+    if (need.length) {
+      var urls = need.map(function(id){
+        return 'https://site.api.espn.com/apis/site/v2/sports/soccer/fifa.world/summary?event=' + id;
+      });
+      var sums = await fetchPool(urls, 6);
+      sums.forEach(function(s, i){ if (s) SUMMARY_CACHE[need[i]] = s; });
+    }
+    var map = {}; ids.forEach(function(id){ if (SUMMARY_CACHE[id]) map[id] = SUMMARY_CACHE[id]; });
+    return map;
+  }
+
+  // Extract goals (scorer + minute + team) from a match summary
+  function extractGoals(sum) {
+    var goals = [];
+    (sum.keyEvents || []).forEach(function(k){
+      if (k.shootout) return;
+      var tType = ((k.type && k.type.type) || '').toLowerCase();
+      var tTxt  = ((k.type && k.type.text) || '').toLowerCase();
+      if (tType.indexOf('var') === 0) return;
+      var isOwn  = tType === 'own-goal';
+      var isGoal = tType === 'goal' || isOwn || k.scoringPlay === true;
+      if (!isGoal) return;
+      var part = (k.participants && k.participants[0]) || null;
+      var ath  = part && part.athlete;
+      var name = ath && (ath.displayName || ath.shortName);
+      if (!name) return;
+      goals.push({
+        name: name,
+        min:  (k.clock && k.clock.displayValue) || '',
+        team: (k.team && k.team.displayName) || '',
+        own:  isOwn,
+        pen:  k.penaltyKick === true || /penalty/.test(tTxt)
+      });
+    });
+    return goals;
+  }
+
+  // Locate the schedule card for a fixture + which visual side is the home team
+  function findCardAndSides(homeDisp, awayDisp) {
+    var cards = document.querySelectorAll('#pane-schedule .match-card');
+    var h = homeDisp.toLowerCase(), a = awayDisp.toLowerCase();
+    for (var i = 0; i < cards.length; i++) {
+      var t = cards[i].textContent.toLowerCase();
+      if (t.indexOf(h) >= 0 && t.indexOf(a) >= 0) {
+        var leftEl = cards[i].querySelector('.match-team:not(.right)');
+        var leftText = (leftEl ? leftEl.textContent : '').toLowerCase();
+        return { card: cards[i], homeOnLeft: leftText.indexOf(h) >= 0 };
+      }
+    }
+    return null;
+  }
+
+  function renderMatchGoals(info, goals, homeDisp, awayDisp) {
+    var card = info.card;
+    var existing = card.querySelector('.match-goals');
+    if (!goals.length) { if (existing) existing.parentNode.removeChild(existing); return; }
+    var leftArr = [], rightArr = [];
+    goals.forEach(function(g){
+      var canon = (TC[(g.team || '').toLowerCase()] || {}).n || g.team;
+      var isHome = canon.toLowerCase() === homeDisp.toLowerCase();
+      var toLeft = info.homeOnLeft ? isHome : !isHome;
+      var tag = g.own ? ' <span class="mg-og">(เข้าตัวเอง)</span>'
+              : g.pen ? ' <span class="mg-pen">(จุดโทษ)</span>' : '';
+      var item = '<span class="mg-item"><i class="fa fa-futbol"></i><span class="mg-min">' +
+                 escH(g.min) + '</span> ' + escH(g.name) + tag + '</span>';
+      (toLeft ? leftArr : rightArr).push(item);
+    });
+    var html = '<div class="match-goals"><div class="mg-col mg-left">' + leftArr.join('') + '</div>' +
+               '<div class="mg-col mg-right">' + rightArr.join('') + '</div></div>';
+    if (existing) { existing.outerHTML = html; }
+    else { var top = card.querySelector('.match-top'); if (top) top.insertAdjacentHTML('afterend', html); }
+  }
+
+  async function updateMatchGoals(events) {
+    var map = await getMatchSummaries(events);
+    (events || []).forEach(function(e){
+      var sum = map[e.id]; if (!sum) return;
+      var comp = e.competitions && e.competitions[0];
+      var cs = (comp && comp.competitors) || [];
+      var home = cs.find(function(c){return c.homeAway==='home';}) || cs[0];
+      var away = cs.find(function(c){return c.homeAway==='away';}) || cs[1];
+      if (!home || !away) return;
+      var hn = (home.team && home.team.displayName) || '';
+      var an = (away.team && away.team.displayName) || '';
+      var homeDisp = (TC[hn.toLowerCase()] || {}).n || hn;
+      var awayDisp = (TC[an.toLowerCase()] || {}).n || an;
+      var info = findCardAndSides(homeDisp, awayDisp); if (!info) return;
+      renderMatchGoals(info, extractGoals(sum), homeDisp, awayDisp);
+    });
   }
 
   applyFlags();
