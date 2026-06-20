@@ -54,6 +54,21 @@
     .standings-table td { padding: 7px 10px; border-bottom: 1px solid rgba(255,255,255,.04); vertical-align: middle; }
     .standings-table tr:last-child td { border-bottom: none; }
     .standings-table tr:hover td { background: rgba(255,255,255,.03); }
+    /* Standings responsiveness — never clip; scroll within card if too narrow */
+    .standings-table { min-width: 340px; }
+    .tbl-wrap { overflow-x: auto; scrollbar-width: thin; scrollbar-color: rgba(240,165,0,.4) transparent; }
+    .tbl-wrap::-webkit-scrollbar { height: 6px; }
+    .tbl-wrap::-webkit-scrollbar-track { background: transparent; }
+    .tbl-wrap::-webkit-scrollbar-thumb { background: rgba(240,165,0,.4); border-radius: 6px; }
+    @media (max-width: 991px) {
+      .standings-table { font-size: .8rem; min-width: 330px; }
+      .standings-table th { padding: 6px 7px; font-size: .68rem; }
+      .standings-table td { padding: 6px 7px; }
+    }
+    @media (max-width: 575px) {
+      .standings-table { font-size: .82rem; min-width: 320px; }
+      .standings-table th, .standings-table td { padding: 6px 6px; }
+    }
     .pos-num { font-weight: 700; color: var(--wc-silver); width: 22px; }
     .pos-1 .pos-num, .pos-2 .pos-num { color: #4caf50; }
     .team-flag { font-size: 1.1rem; margin-right: 6px; }
@@ -225,10 +240,10 @@
   <div class="row g-3">
 
     <!-- GROUP A -->
-    <div class="col-md-6 col-lg-4">
+    <div class="col-12 col-md-6 col-xl-4">
       <div class="group-card">
         <div class="group-header"><div class="group-letter">A</div><div class="group-title">กลุ่ม A — ผล MD1 แล้ว</div></div>
-        <table class="standings-table">
+        <div class="tbl-wrap"><table class="standings-table">
           <thead><tr><th>#</th><th>ทีม</th><th class="text-center">แข่ง</th><th class="text-center">W</th><th class="text-center">D</th><th class="text-center">L</th><th class="text-center">ได้</th><th class="text-center">เสีย</th><th class="text-center">ต่าง</th><th class="text-center">แต้ม</th></tr></thead>
           <tbody>
             <tr class="pos-1"><td class="pos-num">1</td><td><span class="team-flag">🇲🇽</span><b>Mexico</b> <span class="host-badge">HOST</span></td><td class="center">1</td><td class="center">1</td><td class="center">0</td><td class="center">0</td><td class="center">2</td><td class="center">0</td><td class="center">+2</td><td class="pts-cell">3</td></tr>
@@ -236,15 +251,15 @@
             <tr><td class="pos-num">3</td><td><span class="team-flag">🇨🇿</span>Czechia</td><td class="center">1</td><td class="center">0</td><td class="center">0</td><td class="center">1</td><td class="center">1</td><td class="center">2</td><td class="center">-1</td><td class="pts-cell">0</td></tr>
             <tr><td class="pos-num">4</td><td><span class="team-flag">🇿🇦</span>South Africa</td><td class="center">1</td><td class="center">0</td><td class="center">0</td><td class="center">1</td><td class="center">0</td><td class="center">2</td><td class="center">-2</td><td class="pts-cell">0</td></tr>
           </tbody>
-        </table>
+        </table></div>
       </div>
     </div>
 
     <!-- GROUP B -->
-    <div class="col-md-6 col-lg-4">
+    <div class="col-12 col-md-6 col-xl-4">
       <div class="group-card">
         <div class="group-header"><div class="group-letter">B</div><div class="group-title">กลุ่ม B</div></div>
-        <table class="standings-table">
+        <div class="tbl-wrap"><table class="standings-table">
           <thead><tr><th>#</th><th>ทีม</th><th class="text-center">แข่ง</th><th class="text-center">W</th><th class="text-center">D</th><th class="text-center">L</th><th class="text-center">ได้</th><th class="text-center">เสีย</th><th class="text-center">ต่าง</th><th class="text-center">แต้ม</th></tr></thead>
           <tbody>
             <tr><td class="pos-num">-</td><td><span class="team-flag">🇨🇦</span>Canada <span class="host-badge">HOST</span></td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="pts-cell">0</td></tr>
@@ -252,15 +267,15 @@
             <tr><td class="pos-num">-</td><td><span class="team-flag">🇶🇦</span>Qatar</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="pts-cell">0</td></tr>
             <tr><td class="pos-num">-</td><td><span class="team-flag">🇨🇭</span>Switzerland</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="pts-cell">0</td></tr>
           </tbody>
-        </table>
+        </table></div>
       </div>
     </div>
 
     <!-- GROUP C -->
-    <div class="col-md-6 col-lg-4">
+    <div class="col-12 col-md-6 col-xl-4">
       <div class="group-card">
         <div class="group-header"><div class="group-letter">C</div><div class="group-title">กลุ่ม C</div></div>
-        <table class="standings-table">
+        <div class="tbl-wrap"><table class="standings-table">
           <thead><tr><th>#</th><th>ทีม</th><th class="text-center">แข่ง</th><th class="text-center">W</th><th class="text-center">D</th><th class="text-center">L</th><th class="text-center">ได้</th><th class="text-center">เสีย</th><th class="text-center">ต่าง</th><th class="text-center">แต้ม</th></tr></thead>
           <tbody>
             <tr><td class="pos-num">-</td><td><span class="team-flag">🇧🇷</span>Brazil</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="pts-cell">0</td></tr>
@@ -268,15 +283,15 @@
             <tr><td class="pos-num">-</td><td><span class="team-flag" style="font-size:.68rem;">SCO</span>Scotland</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="pts-cell">0</td></tr>
             <tr><td class="pos-num">-</td><td><span class="team-flag">🇭🇹</span>Haiti</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="pts-cell">0</td></tr>
           </tbody>
-        </table>
+        </table></div>
       </div>
     </div>
 
     <!-- GROUP D -->
-    <div class="col-md-6 col-lg-4">
+    <div class="col-12 col-md-6 col-xl-4">
       <div class="group-card">
         <div class="group-header"><div class="group-letter">D</div><div class="group-title">กลุ่ม D</div></div>
-        <table class="standings-table">
+        <div class="tbl-wrap"><table class="standings-table">
           <thead><tr><th>#</th><th>ทีม</th><th class="text-center">แข่ง</th><th class="text-center">W</th><th class="text-center">D</th><th class="text-center">L</th><th class="text-center">ได้</th><th class="text-center">เสีย</th><th class="text-center">ต่าง</th><th class="text-center">แต้ม</th></tr></thead>
           <tbody>
             <tr><td class="pos-num">-</td><td><span class="team-flag">🇺🇸</span>USA <span class="host-badge">HOST</span></td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="pts-cell">0</td></tr>
@@ -284,15 +299,15 @@
             <tr><td class="pos-num">-</td><td><span class="team-flag">🇹🇷</span>Türkiye</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="pts-cell">0</td></tr>
             <tr><td class="pos-num">-</td><td><span class="team-flag">🇦🇺</span>Australia</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="pts-cell">0</td></tr>
           </tbody>
-        </table>
+        </table></div>
       </div>
     </div>
 
     <!-- GROUP E -->
-    <div class="col-md-6 col-lg-4">
+    <div class="col-12 col-md-6 col-xl-4">
       <div class="group-card">
         <div class="group-header"><div class="group-letter">E</div><div class="group-title">กลุ่ม E</div></div>
-        <table class="standings-table">
+        <div class="tbl-wrap"><table class="standings-table">
           <thead><tr><th>#</th><th>ทีม</th><th class="text-center">แข่ง</th><th class="text-center">W</th><th class="text-center">D</th><th class="text-center">L</th><th class="text-center">ได้</th><th class="text-center">เสีย</th><th class="text-center">ต่าง</th><th class="text-center">แต้ม</th></tr></thead>
           <tbody>
             <tr><td class="pos-num">-</td><td><span class="team-flag">🇩🇪</span>Germany</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="pts-cell">0</td></tr>
@@ -300,15 +315,15 @@
             <tr><td class="pos-num">-</td><td><span class="team-flag">🇨🇮</span>Ivory Coast</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="pts-cell">0</td></tr>
             <tr><td class="pos-num">-</td><td><span class="team-flag">🇨🇼</span>Curaçao</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="pts-cell">0</td></tr>
           </tbody>
-        </table>
+        </table></div>
       </div>
     </div>
 
     <!-- GROUP F -->
-    <div class="col-md-6 col-lg-4">
+    <div class="col-12 col-md-6 col-xl-4">
       <div class="group-card">
         <div class="group-header"><div class="group-letter">F</div><div class="group-title">กลุ่ม F</div></div>
-        <table class="standings-table">
+        <div class="tbl-wrap"><table class="standings-table">
           <thead><tr><th>#</th><th>ทีม</th><th class="text-center">แข่ง</th><th class="text-center">W</th><th class="text-center">D</th><th class="text-center">L</th><th class="text-center">ได้</th><th class="text-center">เสีย</th><th class="text-center">ต่าง</th><th class="text-center">แต้ม</th></tr></thead>
           <tbody>
             <tr><td class="pos-num">-</td><td><span class="team-flag">🇳🇱</span>Netherlands</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="pts-cell">0</td></tr>
@@ -316,15 +331,15 @@
             <tr><td class="pos-num">-</td><td><span class="team-flag">🇸🇪</span>Sweden</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="pts-cell">0</td></tr>
             <tr><td class="pos-num">-</td><td><span class="team-flag">🇹🇳</span>Tunisia</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="pts-cell">0</td></tr>
           </tbody>
-        </table>
+        </table></div>
       </div>
     </div>
 
     <!-- GROUP G -->
-    <div class="col-md-6 col-lg-4">
+    <div class="col-12 col-md-6 col-xl-4">
       <div class="group-card">
         <div class="group-header"><div class="group-letter">G</div><div class="group-title">กลุ่ม G</div></div>
-        <table class="standings-table">
+        <div class="tbl-wrap"><table class="standings-table">
           <thead><tr><th>#</th><th>ทีม</th><th class="text-center">แข่ง</th><th class="text-center">W</th><th class="text-center">D</th><th class="text-center">L</th><th class="text-center">ได้</th><th class="text-center">เสีย</th><th class="text-center">ต่าง</th><th class="text-center">แต้ม</th></tr></thead>
           <tbody>
             <tr><td class="pos-num">-</td><td><span class="team-flag">🇧🇪</span>Belgium</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="pts-cell">0</td></tr>
@@ -332,15 +347,15 @@
             <tr><td class="pos-num">-</td><td><span class="team-flag">🇪🇬</span>Egypt</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="pts-cell">0</td></tr>
             <tr><td class="pos-num">-</td><td><span class="team-flag">🇮🇷</span>Iran</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="pts-cell">0</td></tr>
           </tbody>
-        </table>
+        </table></div>
       </div>
     </div>
 
     <!-- GROUP H -->
-    <div class="col-md-6 col-lg-4">
+    <div class="col-12 col-md-6 col-xl-4">
       <div class="group-card">
         <div class="group-header"><div class="group-letter">H</div><div class="group-title">กลุ่ม H</div></div>
-        <table class="standings-table">
+        <div class="tbl-wrap"><table class="standings-table">
           <thead><tr><th>#</th><th>ทีม</th><th class="text-center">แข่ง</th><th class="text-center">W</th><th class="text-center">D</th><th class="text-center">L</th><th class="text-center">ได้</th><th class="text-center">เสีย</th><th class="text-center">ต่าง</th><th class="text-center">แต้ม</th></tr></thead>
           <tbody>
             <tr><td class="pos-num">-</td><td><span class="team-flag">🇪🇸</span>Spain</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="pts-cell">0</td></tr>
@@ -348,15 +363,15 @@
             <tr><td class="pos-num">-</td><td><span class="team-flag">🇸🇦</span>Saudi Arabia</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="pts-cell">0</td></tr>
             <tr><td class="pos-num">-</td><td><span class="team-flag">🇨🇻</span>Cape Verde</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="pts-cell">0</td></tr>
           </tbody>
-        </table>
+        </table></div>
       </div>
     </div>
 
     <!-- GROUP I -->
-    <div class="col-md-6 col-lg-4">
+    <div class="col-12 col-md-6 col-xl-4">
       <div class="group-card">
         <div class="group-header"><div class="group-letter">I</div><div class="group-title">กลุ่ม I</div></div>
-        <table class="standings-table">
+        <div class="tbl-wrap"><table class="standings-table">
           <thead><tr><th>#</th><th>ทีม</th><th class="text-center">แข่ง</th><th class="text-center">W</th><th class="text-center">D</th><th class="text-center">L</th><th class="text-center">ได้</th><th class="text-center">เสีย</th><th class="text-center">ต่าง</th><th class="text-center">แต้ม</th></tr></thead>
           <tbody>
             <tr><td class="pos-num">-</td><td><span class="team-flag">🇫🇷</span>France</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="pts-cell">0</td></tr>
@@ -364,15 +379,15 @@
             <tr><td class="pos-num">-</td><td><span class="team-flag">🇳🇴</span>Norway</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="pts-cell">0</td></tr>
             <tr><td class="pos-num">-</td><td><span class="team-flag">🇮🇶</span>Iraq</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="pts-cell">0</td></tr>
           </tbody>
-        </table>
+        </table></div>
       </div>
     </div>
 
     <!-- GROUP J -->
-    <div class="col-md-6 col-lg-4">
+    <div class="col-12 col-md-6 col-xl-4">
       <div class="group-card">
         <div class="group-header"><div class="group-letter">J</div><div class="group-title">กลุ่ม J</div></div>
-        <table class="standings-table">
+        <div class="tbl-wrap"><table class="standings-table">
           <thead><tr><th>#</th><th>ทีม</th><th class="text-center">แข่ง</th><th class="text-center">W</th><th class="text-center">D</th><th class="text-center">L</th><th class="text-center">ได้</th><th class="text-center">เสีย</th><th class="text-center">ต่าง</th><th class="text-center">แต้ม</th></tr></thead>
           <tbody>
             <tr><td class="pos-num">-</td><td><span class="team-flag">🇦🇷</span>Argentina</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="pts-cell">0</td></tr>
@@ -380,15 +395,15 @@
             <tr><td class="pos-num">-</td><td><span class="team-flag">🇦🇹</span>Austria</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="pts-cell">0</td></tr>
             <tr><td class="pos-num">-</td><td><span class="team-flag">🇯🇴</span>Jordan</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="pts-cell">0</td></tr>
           </tbody>
-        </table>
+        </table></div>
       </div>
     </div>
 
     <!-- GROUP K -->
-    <div class="col-md-6 col-lg-4">
+    <div class="col-12 col-md-6 col-xl-4">
       <div class="group-card">
         <div class="group-header"><div class="group-letter">K</div><div class="group-title">กลุ่ม K</div></div>
-        <table class="standings-table">
+        <div class="tbl-wrap"><table class="standings-table">
           <thead><tr><th>#</th><th>ทีม</th><th class="text-center">แข่ง</th><th class="text-center">W</th><th class="text-center">D</th><th class="text-center">L</th><th class="text-center">ได้</th><th class="text-center">เสีย</th><th class="text-center">ต่าง</th><th class="text-center">แต้ม</th></tr></thead>
           <tbody>
             <tr><td class="pos-num">-</td><td><span class="team-flag">🇵🇹</span>Portugal</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="pts-cell">0</td></tr>
@@ -396,15 +411,15 @@
             <tr><td class="pos-num">-</td><td><span class="team-flag">🇨🇩</span>DR Congo</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="pts-cell">0</td></tr>
             <tr><td class="pos-num">-</td><td><span class="team-flag">🇺🇿</span>Uzbekistan</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="pts-cell">0</td></tr>
           </tbody>
-        </table>
+        </table></div>
       </div>
     </div>
 
     <!-- GROUP L -->
-    <div class="col-md-6 col-lg-4">
+    <div class="col-12 col-md-6 col-xl-4">
       <div class="group-card">
         <div class="group-header"><div class="group-letter">L</div><div class="group-title">กลุ่ม L</div></div>
-        <table class="standings-table">
+        <div class="tbl-wrap"><table class="standings-table">
           <thead><tr><th>#</th><th>ทีม</th><th class="text-center">แข่ง</th><th class="text-center">W</th><th class="text-center">D</th><th class="text-center">L</th><th class="text-center">ได้</th><th class="text-center">เสีย</th><th class="text-center">ต่าง</th><th class="text-center">แต้ม</th></tr></thead>
           <tbody>
             <tr><td class="pos-num">-</td><td><span class="team-flag" style="font-size:.68rem;">ENG</span>England</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="pts-cell">0</td></tr>
@@ -412,7 +427,7 @@
             <tr><td class="pos-num">-</td><td><span class="team-flag">🇬🇭</span>Ghana</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="pts-cell">0</td></tr>
             <tr><td class="pos-num">-</td><td><span class="team-flag">🇵🇦</span>Panama</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="pts-cell">0</td></tr>
           </tbody>
-        </table>
+        </table></div>
       </div>
     </div>
 
@@ -846,7 +861,7 @@
     <!-- ══ USA ══ -->
     <div class="col-12"><h6 style="color:var(--wc-gold);border-bottom:1px solid var(--card-border);padding-bottom:8px;"><span class="fi fi-us" style="font-size:1.1rem;vertical-align:middle;border-radius:2px;"></span> &nbsp;United States — 11 สนาม</h6></div>
 
-    <div class="col-md-6 col-lg-4">
+    <div class="col-12 col-md-6 col-xl-4">
       <div class="venue-card-new">
         <div class="venue-img-wrap"><div class="venue-img-ph">🏟️</div>
           <img src="https://en.wikipedia.org/w/index.php?title=Special:Redirect/file/Metlife_stadium_%28Aerial_view%29.jpg&width=640" alt="MetLife Stadium" class="venue-img" onerror="this.style.display='none'"></div>
@@ -861,7 +876,7 @@
       </div>
     </div>
 
-    <div class="col-md-6 col-lg-4">
+    <div class="col-12 col-md-6 col-xl-4">
       <div class="venue-card-new">
         <div class="venue-img-wrap"><div class="venue-img-ph">🏟️</div>
           <img src="https://en.wikipedia.org/w/index.php?title=Special:Redirect/file/Arlington_June_2020_4_%28AT%26T_Stadium%29.jpg&width=640" alt="AT&T Stadium" class="venue-img" onerror="this.style.display='none'"></div>
@@ -876,7 +891,7 @@
       </div>
     </div>
 
-    <div class="col-md-6 col-lg-4">
+    <div class="col-12 col-md-6 col-xl-4">
       <div class="venue-card-new">
         <div class="venue-img-wrap"><div class="venue-img-ph">🏟️</div>
           <img src="https://en.wikipedia.org/w/index.php?title=Special:Redirect/file/SoFi_Stadium_2023.jpg&width=640" alt="SoFi Stadium" class="venue-img" onerror="this.style.display='none'"></div>
@@ -891,7 +906,7 @@
       </div>
     </div>
 
-    <div class="col-md-6 col-lg-4">
+    <div class="col-12 col-md-6 col-xl-4">
       <div class="venue-card-new">
         <div class="venue-img-wrap"><div class="venue-img-ph">🏟️</div>
           <img src="https://en.wikipedia.org/w/index.php?title=Special:Redirect/file/Levi%27s_Stadium_in_February_2016_prior_to_Super_Bowl_50_%2824398261729%29.jpg&width=640" alt="Levi's Stadium" class="venue-img" onerror="this.style.display='none'"></div>
@@ -906,7 +921,7 @@
       </div>
     </div>
 
-    <div class="col-md-6 col-lg-4">
+    <div class="col-12 col-md-6 col-xl-4">
       <div class="venue-card-new">
         <div class="venue-img-wrap"><div class="venue-img-ph">🏟️</div>
           <img src="https://en.wikipedia.org/w/index.php?title=Special:Redirect/file/Hard_Rock_Stadium_for_Super_Bowl_LIV_%2849606710103%29.jpg&width=640" alt="Hard Rock Stadium" class="venue-img" onerror="this.style.display='none'"></div>
@@ -921,7 +936,7 @@
       </div>
     </div>
 
-    <div class="col-md-6 col-lg-4">
+    <div class="col-12 col-md-6 col-xl-4">
       <div class="venue-card-new">
         <div class="venue-img-wrap"><div class="venue-img-ph">🏟️</div>
           <img src="https://en.wikipedia.org/w/index.php?title=Special:Redirect/file/Lincoln_Financial_Field_%28Aerial_view%29.jpg&width=640" alt="Lincoln Financial Field" class="venue-img" onerror="this.style.display='none'"></div>
@@ -936,7 +951,7 @@
       </div>
     </div>
 
-    <div class="col-md-6 col-lg-4">
+    <div class="col-12 col-md-6 col-xl-4">
       <div class="venue-card-new">
         <div class="venue-img-wrap"><div class="venue-img-ph">🏟️</div>
           <img src="https://en.wikipedia.org/w/index.php?title=Special:Redirect/file/Aerial_view_of_Arrowhead_Stadium_08-31-2013.jpg&width=640" alt="Arrowhead Stadium" class="venue-img" onerror="this.style.display='none'"></div>
@@ -951,7 +966,7 @@
       </div>
     </div>
 
-    <div class="col-md-6 col-lg-4">
+    <div class="col-12 col-md-6 col-xl-4">
       <div class="venue-card-new">
         <div class="venue-img-wrap"><div class="venue-img-ph">🏟️</div>
           <img src="https://en.wikipedia.org/w/index.php?title=Special:Redirect/file/Gillette_Stadium_%28Top_View%29.jpg&width=640" alt="Gillette Stadium" class="venue-img" onerror="this.style.display='none'"></div>
@@ -966,7 +981,7 @@
       </div>
     </div>
 
-    <div class="col-md-6 col-lg-4">
+    <div class="col-12 col-md-6 col-xl-4">
       <div class="venue-card-new">
         <div class="venue-img-wrap"><div class="venue-img-ph">🏟️</div>
           <img src="https://en.wikipedia.org/w/index.php?title=Special:Redirect/file/2025_FIFA_Club_World_Cup_-_Seattle_Sounders_FC_vs._Atl%C3%A9tico_Madrid_-_05.jpg&width=640" alt="Lumen Field" class="venue-img" onerror="this.style.display='none'"></div>
@@ -981,7 +996,7 @@
       </div>
     </div>
 
-    <div class="col-md-6 col-lg-4">
+    <div class="col-12 col-md-6 col-xl-4">
       <div class="venue-card-new">
         <div class="venue-img-wrap"><div class="venue-img-ph">🏟️</div>
           <img src="https://en.wikipedia.org/w/index.php?title=Special:Redirect/file/Mercedes_Benz_Stadium_time_lapse_capture_2017-08-13.jpg&width=640" alt="Mercedes-Benz Stadium" class="venue-img" onerror="this.style.display='none'"></div>
@@ -996,7 +1011,7 @@
       </div>
     </div>
 
-    <div class="col-md-6 col-lg-4">
+    <div class="col-12 col-md-6 col-xl-4">
       <div class="venue-card-new">
         <div class="venue-img-wrap"><div class="venue-img-ph">🏟️</div>
           <img src="https://en.wikipedia.org/w/index.php?title=Special:Redirect/file/Nrg_stadium.jpg&width=640" alt="NRG Stadium" class="venue-img" onerror="this.style.display='none'"></div>
@@ -1014,7 +1029,7 @@
     <!-- ══ MEXICO ══ -->
     <div class="col-12 mt-2"><h6 style="color:var(--wc-gold);border-bottom:1px solid var(--card-border);padding-bottom:8px;"><span class="fi fi-mx" style="font-size:1.1rem;vertical-align:middle;border-radius:2px;"></span> &nbsp;Mexico — 3 สนาม</h6></div>
 
-    <div class="col-md-6 col-lg-4">
+    <div class="col-12 col-md-6 col-xl-4">
       <div class="venue-card-new">
         <div class="venue-img-wrap"><div class="venue-img-ph">🏟️</div>
           <img src="https://en.wikipedia.org/w/index.php?title=Special:Redirect/file/Vista_a%C3%A9rea_del_Estadio_Azteca_-_2026_-_02.jpg&width=640" alt="Estadio Azteca" class="venue-img" onerror="this.style.display='none'"></div>
@@ -1029,7 +1044,7 @@
       </div>
     </div>
 
-    <div class="col-md-6 col-lg-4">
+    <div class="col-12 col-md-6 col-xl-4">
       <div class="venue-card-new">
         <div class="venue-img-wrap"><div class="venue-img-ph">🏟️</div>
           <img src="https://en.wikipedia.org/w/index.php?title=Special:Redirect/file/Mexico_Guadalupe_Monterrey_Estadio_BBVA_Bancomer_fifa_world_cup_2026_6.JPG&width=640" alt="Estadio BBVA" class="venue-img" onerror="this.style.display='none'"></div>
@@ -1044,7 +1059,7 @@
       </div>
     </div>
 
-    <div class="col-md-6 col-lg-4">
+    <div class="col-12 col-md-6 col-xl-4">
       <div class="venue-card-new">
         <div class="venue-img-wrap"><div class="venue-img-ph">🏟️</div>
           <img src="https://en.wikipedia.org/w/index.php?title=Special:Redirect/file/Estadio_Akron_02-07-2022_cabecera_sur_lado_derecho_%283%29.jpg&width=640" alt="Estadio Akron" class="venue-img" onerror="this.style.display='none'"></div>
@@ -1062,7 +1077,7 @@
     <!-- ══ CANADA ══ -->
     <div class="col-12 mt-2"><h6 style="color:var(--wc-gold);border-bottom:1px solid var(--card-border);padding-bottom:8px;"><span class="fi fi-ca" style="font-size:1.1rem;vertical-align:middle;border-radius:2px;"></span> &nbsp;Canada — 2 สนาม</h6></div>
 
-    <div class="col-md-6 col-lg-4">
+    <div class="col-12 col-md-6 col-xl-4">
       <div class="venue-card-new">
         <div class="venue-img-wrap"><div class="venue-img-ph">🏟️</div>
           <img src="https://en.wikipedia.org/w/index.php?title=Special:Redirect/file/Toronto_BMO_Field_in_2024.jpg&width=640" alt="BMO Field" class="venue-img" onerror="this.style.display='none'"></div>
@@ -1077,7 +1092,7 @@
       </div>
     </div>
 
-    <div class="col-md-6 col-lg-4">
+    <div class="col-12 col-md-6 col-xl-4">
       <div class="venue-card-new">
         <div class="venue-img-wrap"><div class="venue-img-ph">🏟️</div>
           <img src="https://en.wikipedia.org/w/index.php?title=Special:Redirect/file/BC_Place_2015_Women%27s_FIFA_World_Cup.jpg&width=640" alt="BC Place" class="venue-img" onerror="this.style.display='none'"></div>
