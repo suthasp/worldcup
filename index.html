@@ -1397,7 +1397,7 @@
     });
   }
 
-  // ── Knockout bracket: populate R32 slots from current group standings ──
+  // ── Knockout bracket: populate R32 slots from confirmed group standings ──
   function updateKnockoutBracket(groups) {
     var bracketRow = document.querySelector('#pane-knockout .ko-scroll > div:nth-child(2)');
     if (!bracketRow) return;
@@ -1416,8 +1416,14 @@
       });
     });
 
-    // Best 8 third-place teams
+    // A group is "done" when all 4 teams have played 3 matches (group stage complete)
+    var groupDone = sg.map(function(g){
+      return g.length >= 4 && g.every(function(e){ return getStat(e,'gamesPlayed') >= 3; });
+    });
+
+    // Collect 3rd-place teams from COMPLETED groups only, rank globally, take best 8
     var thirds = sg.map(function(g,gi){
+      if (!groupDone[gi]) return null;
       var t=g[2]; if(!t) return null;
       return {e:t,gi:gi,pts:getStat(t,'points'),gd:getStat(t,'pointDifferential'),gf:getStat(t,'pointsFor')};
     }).filter(Boolean);
@@ -1426,12 +1432,25 @@
       if(b.gd!==a.gd)  return b.gd-a.gd;
       return b.gf-a.gf;
     });
+    var top8Thirds = thirds.slice(0,8);
+    // Build map groupIdx → entry (only qualifying 3rd-place teams)
     var thirdByGi = {};
-    thirds.slice(0,8).forEach(function(t){ thirdByGi[t.gi]=t.e; });
+    top8Thirds.forEach(function(t){ thirdByGi[t.gi]=t.e; });
 
     function gIdx(l){ return l.charCodeAt(0)-65; }
+
+    // get3rd: find best qualifying 3rd-place from the pool; each team used only once
     function get3rd(letters){
-      for(var i=0;i<letters.length;i++){ var e=thirdByGi[gIdx(letters[i])]; if(e) return e; }
+      // Iterate top8Thirds in rank order so best team gets the first matching slot
+      for(var i=0;i<top8Thirds.length;i++){
+        var t=top8Thirds[i];
+        if(!thirdByGi[t.gi]) continue; // already consumed
+        var letter=String.fromCharCode(65+t.gi);
+        if(letters.indexOf(letter)>=0){
+          delete thirdByGi[t.gi]; // consume — prevents duplicate assignments
+          return t.e;
+        }
+      }
       return null;
     }
 
@@ -1458,19 +1477,25 @@
       [{r:0,g:11},{r:2,gs:['E','H','I','J','K']}],
     ];
 
-    function resolveEntry(spec){
-      if(spec.gs) return get3rd(spec.gs);
+    // Pre-resolve all 3rd-place slots before processing (stateful consumption)
+    // We need to consume in slot order, so resolve LEFT then RIGHT sequentially
+    var ALL_SLOTS = LEFT.concat(RIGHT);
+    var resolved3rd = {};
+    ALL_SLOTS.forEach(function(slot, si){
+      slot.forEach(function(spec, pi){
+        if(spec.gs) resolved3rd[si+'_'+pi] = get3rd(spec.gs);
+      });
+    });
+
+    function resolveEntry(spec, si, pi){
+      if(spec.gs) return resolved3rd[si+'_'+pi] || null;
+      if(!groupDone[spec.g]) return null; // group not finished yet
       return sg[spec.g] && sg[spec.g][spec.r];
-    }
-    function groupHasPlayed(spec){
-      if(spec.gs) return false; // 3rd-place: checked per entry
-      return (sg[spec.g]||[]).some(function(e){return getStat(e,'gamesPlayed')>0;});
     }
 
     function fillRow(tr, entry, spec) {
       var fp=tr.querySelector('.ko-fp'), tn=tr.querySelector('.ko-tn');
-      var hasData = entry && getStat(entry,'gamesPlayed')>0;
-      if(!hasData) {
+      if(!entry) {
         if(fp){fp.innerHTML='';fp.style.background='rgba(255,255,255,.15)';}
         if(tn) tn.textContent = spec.gs ? '#3 '+spec.gs.join('/') : '#'+(spec.r+1)+' กลุ่ม '+String.fromCharCode(65+spec.g);
         return;
@@ -1485,14 +1510,19 @@
       if(tn) tn.textContent = name;
     }
 
-    function fillSlot(mc, topSpec, botSpec){
+    LEFT.forEach(function(slot,i){
+      var mc=leftMcs[i]; if(!mc) return;
       var trs=mc.querySelectorAll('.ko-tr'); if(trs.length<2) return;
-      fillRow(trs[0], resolveEntry(topSpec), topSpec);
-      fillRow(trs[1], resolveEntry(botSpec), botSpec);
-    }
-
-    LEFT.forEach(function(slot,i){ var mc=leftMcs[i]; if(mc) fillSlot(mc,slot[0],slot[1]); });
-    RIGHT.forEach(function(slot,i){ var mc=rightMcs[i]; if(mc) fillSlot(mc,slot[0],slot[1]); });
+      fillRow(trs[0], resolveEntry(slot[0],i,0), slot[0]);
+      fillRow(trs[1], resolveEntry(slot[1],i,1), slot[1]);
+    });
+    RIGHT.forEach(function(slot,i){
+      var mc=rightMcs[i]; if(!mc) return;
+      var trs=mc.querySelectorAll('.ko-tr'); if(trs.length<2) return;
+      var si=LEFT.length+i;
+      fillRow(trs[0], resolveEntry(slot[0],si,0), slot[0]);
+      fillRow(trs[1], resolveEntry(slot[1],si,1), slot[1]);
+    });
   }
 
   // ── Real-time standings: computed from live + finished results ──
