@@ -1397,6 +1397,104 @@
     });
   }
 
+  // ── Knockout bracket: populate R32 slots from current group standings ──
+  function updateKnockoutBracket(groups) {
+    var bracketRow = document.querySelector('#pane-knockout .ko-scroll > div:nth-child(2)');
+    if (!bracketRow) return;
+    var cols = Array.from(bracketRow.children).filter(function(c){ return c.tagName === 'DIV'; });
+    if (cols.length < 9) return;
+    var leftMcs  = Array.from(cols[0].querySelectorAll('.ko-mc'));
+    var rightMcs = Array.from(cols[8].querySelectorAll('.ko-mc'));
+
+    // Sort each group: Pts → GD → GF
+    var sg = groups.map(function(g) {
+      var entries = (g.standings && g.standings.entries) || g.entries || [];
+      return entries.slice().sort(function(a,b){
+        var pa=getStat(a,'points'),pb=getStat(b,'points'); if(pb!==pa) return pb-pa;
+        var da=getStat(a,'pointDifferential'),db=getStat(b,'pointDifferential'); if(db!==da) return db-da;
+        return getStat(b,'pointsFor')-getStat(a,'pointsFor');
+      });
+    });
+
+    // Best 8 third-place teams
+    var thirds = sg.map(function(g,gi){
+      var t=g[2]; if(!t) return null;
+      return {e:t,gi:gi,pts:getStat(t,'points'),gd:getStat(t,'pointDifferential'),gf:getStat(t,'pointsFor')};
+    }).filter(Boolean);
+    thirds.sort(function(a,b){
+      if(b.pts!==a.pts) return b.pts-a.pts;
+      if(b.gd!==a.gd)  return b.gd-a.gd;
+      return b.gf-a.gf;
+    });
+    var thirdByGi = {};
+    thirds.slice(0,8).forEach(function(t){ thirdByGi[t.gi]=t.e; });
+
+    function gIdx(l){ return l.charCodeAt(0)-65; }
+    function get3rd(letters){
+      for(var i=0;i<letters.length;i++){ var e=thirdByGi[gIdx(letters[i])]; if(e) return e; }
+      return null;
+    }
+
+    // R32 Left slots (top-to-bottom)
+    var LEFT = [
+      [{r:0,g:4},{r:2,gs:['A','B','C','D','F']}],
+      [{r:0,g:8},{r:2,gs:['C','D','F','G','H']}],
+      [{r:1,g:0},{r:1,g:1}],
+      [{r:0,g:5},{r:1,g:2}],
+      [{r:1,g:10},{r:1,g:11}],
+      [{r:0,g:7},{r:1,g:9}],
+      [{r:0,g:3},{r:2,gs:['B','E','F','I','J']}],
+      [{r:0,g:6},{r:2,gs:['A','E','H','I','J']}],
+    ];
+    // R32 Right slots (top-to-bottom)
+    var RIGHT = [
+      [{r:0,g:9},{r:1,g:7}],
+      [{r:1,g:3},{r:1,g:6}],
+      [{r:0,g:1},{r:2,gs:['E','F','G','I','J']}],
+      [{r:0,g:10},{r:2,gs:['D','E','I','J','L']}],
+      [{r:0,g:2},{r:1,g:5}],
+      [{r:1,g:4},{r:1,g:8}],
+      [{r:0,g:0},{r:2,gs:['C','E','F','H','I']}],
+      [{r:0,g:11},{r:2,gs:['E','H','I','J','K']}],
+    ];
+
+    function resolveEntry(spec){
+      if(spec.gs) return get3rd(spec.gs);
+      return sg[spec.g] && sg[spec.g][spec.r];
+    }
+    function groupHasPlayed(spec){
+      if(spec.gs) return false; // 3rd-place: checked per entry
+      return (sg[spec.g]||[]).some(function(e){return getStat(e,'gamesPlayed')>0;});
+    }
+
+    function fillRow(tr, entry, spec) {
+      var fp=tr.querySelector('.ko-fp'), tn=tr.querySelector('.ko-tn');
+      var hasData = entry && getStat(entry,'gamesPlayed')>0;
+      if(!hasData) {
+        if(fp){fp.innerHTML='';fp.style.background='rgba(255,255,255,.15)';}
+        if(tn) tn.textContent = spec.gs ? '#3 '+spec.gs.join('/') : '#'+(spec.r+1)+' กลุ่ม '+String.fromCharCode(65+spec.g);
+        return;
+      }
+      var tKey=((entry.team&&entry.team.displayName)||'').toLowerCase();
+      var fi = entry._fi || (TC[tKey]||{}).fi || '';
+      var name = entry._n || (entry.team&&entry.team.displayName) || 'TBD';
+      if(fp){
+        if(fi){fp.style.background='none';fp.innerHTML='<span class="fi fi-'+fi+'" style="width:18px;height:12px;border-radius:2px;display:inline-block;background-size:cover;"></span>';}
+        else{fp.innerHTML='';fp.style.background='rgba(255,255,255,.15)';}
+      }
+      if(tn) tn.textContent = name;
+    }
+
+    function fillSlot(mc, topSpec, botSpec){
+      var trs=mc.querySelectorAll('.ko-tr'); if(trs.length<2) return;
+      fillRow(trs[0], resolveEntry(topSpec), topSpec);
+      fillRow(trs[1], resolveEntry(botSpec), botSpec);
+    }
+
+    LEFT.forEach(function(slot,i){ var mc=leftMcs[i]; if(mc) fillSlot(mc,slot[0],slot[1]); });
+    RIGHT.forEach(function(slot,i){ var mc=rightMcs[i]; if(mc) fillSlot(mc,slot[0],slot[1]); });
+  }
+
   // ── Real-time standings: computed from live + finished results ──
   async function refreshStandings() {
     var statusEl = document.getElementById('standings-status');
@@ -1429,6 +1527,9 @@
 
       // Inject goal scorers + minutes into finished/live match cards (fire-and-forget)
       if (allEvents.length) updateMatchGoals(allEvents);
+
+      // Populate knockout bracket R32 slots with current group leaders
+      updateKnockoutBracket(groups);
 
       var tbodies = document.querySelectorAll('#pane-groups .standings-table tbody');
       var headers = document.querySelectorAll('#pane-groups .group-title');
