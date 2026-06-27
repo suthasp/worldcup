@@ -680,10 +680,11 @@
     <div style="color:var(--wc-silver);font-size:.8rem;margin-top:4px;">28 มิถุนายน – 19 กรกฎาคม 2569 &nbsp;·&nbsp; 48 ทีม → 32 → 16 → 8 → 4 → Final</div>
   </div>
 
-  <div class="ko-scroll" style="overflow-x:auto;padding-bottom:10px;">
+  <div class="ko-scroll" id="ko-scroll-outer" style="overflow:hidden;padding-bottom:10px;">
+  <div id="ko-scale-wrap" style="width:1472px;transform-origin:top left;">
 
     <!-- ── Round Labels ── -->
-    <div style="display:flex;align-items:flex-end;min-width:1472px;margin-bottom:6px;gap:0;">
+    <div style="display:flex;align-items:flex-end;margin-bottom:6px;gap:0;">
       <div style="width:148px;flex-shrink:0;text-align:center;font-size:.6rem;font-weight:700;color:var(--wc-gold);text-transform:uppercase;letter-spacing:.5px;">รอบ 32 ทีม<br><span style="color:rgba(255,255,255,.35);font-weight:400;">28 มิ.ย.–4 ก.ค.</span></div>
       <div style="width:20px;flex-shrink:0;"></div>
       <div style="width:148px;flex-shrink:0;text-align:center;font-size:.6rem;font-weight:700;color:#64b5f6;text-transform:uppercase;letter-spacing:.5px;">รอบ 16 ทีม<br><span style="color:rgba(255,255,255,.35);font-weight:400;">5–9 ก.ค.</span></div>
@@ -704,7 +705,7 @@
     </div>
 
     <!-- ── Bracket ── -->
-    <div style="display:flex;align-items:stretch;min-width:1472px;height:576px;gap:0;">
+    <div style="display:flex;align-items:stretch;height:576px;gap:0;">
 
       <!-- R32 LEFT (8 × 72px slots) -->
       <div style="width:148px;height:576px;flex-shrink:0;">
@@ -845,7 +846,8 @@
       </div>
 
     </div><!-- /bracket row -->
-  </div><!-- /overflow-x -->
+  </div><!-- /ko-scale-wrap -->
+  </div><!-- /ko-scroll-outer -->
 
   <div style="text-align:center;margin-top:14px;font-size:.76rem;color:rgba(255,255,255,.35);">
     <i class="fa fa-info-circle me-1"></i>ชิงอันดับที่ 3: 18 กรกฎาคม 2569 &nbsp;·&nbsp; SoFi Stadium, Los Angeles, USA
@@ -1152,6 +1154,18 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script>
+  function scaleKnockoutBracket() {
+    var wrap  = document.getElementById('ko-scale-wrap');
+    var outer = document.getElementById('ko-scroll-outer');
+    if (!wrap || !outer) return;
+    var available = outer.clientWidth;
+    var NATURAL_W = 1472;
+    var s = available < NATURAL_W ? available / NATURAL_W : 1;
+    wrap.style.transform = s < 1 ? 'scale(' + s + ')' : '';
+    outer.style.height   = s < 1 ? Math.round((576 + 38) * s) + 'px' : '';
+  }
+  window.addEventListener('resize', scaleKnockoutBracket);
+
   function switchTab(name) {
     ['groups','schedule','knockout','reports','venues'].forEach(function(t) {
       document.getElementById('pane-' + t).style.display = (t === name) ? '' : 'none';
@@ -1160,6 +1174,7 @@
     var tabWrap = document.querySelector('.tab-nav-wrap');
     if (tabWrap) window.scrollTo({ top: tabWrap.offsetTop - 60, behavior: 'smooth' });
     if (name === 'reports') loadReports(false);
+    if (name === 'knockout') setTimeout(scaleKnockoutBracket, 0);
   }
 
   // ── Flag rendering ──────────────────────────────────────────────
@@ -1887,6 +1902,7 @@
   }
 
   applyFlags();
+  scaleKnockoutBracket();
   refreshStandings();
   setInterval(refreshStandings, 60000);
 </script>
