@@ -1488,12 +1488,13 @@
     });
 
     function resolveEntry(spec, si, pi){
-      if(spec.gs) return resolved3rd[si+'_'+pi] || null;
+      if(spec.gs) return undefined; // 3rd-place slots: preserve static HTML
       if(!groupDone[spec.g]) return null; // group not finished yet
       return sg[spec.g] && sg[spec.g][spec.r];
     }
 
     function fillRow(tr, entry, spec) {
+      if(entry === undefined) return; // preserve static HTML for 3rd-place slots
       var fp=tr.querySelector('.ko-fp'), tn=tr.querySelector('.ko-tn');
       if(!entry) {
         if(fp){fp.innerHTML='';fp.style.background='rgba(255,255,255,.15)';}
