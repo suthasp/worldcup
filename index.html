@@ -1529,18 +1529,36 @@
   async function refreshStandings() {
     var statusEl = document.getElementById('standings-status');
     try {
+      // Compute yesterday + today in US Eastern Time for targeted date fetches
+      function espnDate(dayOffset) {
+        var d = new Date(); d.setTime(d.getTime() + dayOffset * 86400000);
+        return d.toLocaleDateString('en-CA', {timeZone:'America/New_York'}).replace(/-/g,'');
+      }
+      var BASE = 'https://site.api.espn.com/apis/site/v2/sports/soccer/fifa.world/scoreboard';
       var results = await Promise.all([
         fetch('https://site.api.espn.com/apis/v2/sports/soccer/fifa.world/standings?season=2026').then(function(r){return r.json();}),
-        fetch('https://site.api.espn.com/apis/site/v2/sports/soccer/fifa.world/scoreboard').then(function(r){return r.json();}).catch(function(){return null;}),
-        // Full tournament range — keeps past finished matches up to date on the schedule
-        fetch('https://site.api.espn.com/apis/site/v2/sports/soccer/fifa.world/scoreboard?dates=20260611-20260719').then(function(r){return r.json();}).catch(function(){return null;})
+        fetch(BASE).then(function(r){return r.json();}).catch(function(){return null;}),
+        // Full tournament range (may be paginated — supplemented by day-specific fetches below)
+        fetch(BASE + '?dates=20260611-20260719').then(function(r){return r.json();}).catch(function(){return null;}),
+        // Yesterday in ET — catches matches that finished on the previous ESPN calendar day
+        fetch(BASE + '?dates=' + espnDate(-1)).then(function(r){return r.json();}).catch(function(){return null;}),
+        // Two days ago — safety net for late-night ET matches
+        fetch(BASE + '?dates=' + espnDate(-2)).then(function(r){return r.json();}).catch(function(){return null;})
       ]);
-      var standingsData  = results[0];
-      var scoreboardData = results[1];
-      var fullSchedule   = results[2];
+      var standingsData   = results[0];
+      var scoreboardData  = results[1];
+      var fullSchedule    = results[2];
+      var yesterdayData   = results[3];
+      var twoDaysAgoData  = results[4];
 
-      // Standings computed from real results (range schedule + today's live overlay).
-      var allEvents = mergeEvents(fullSchedule && fullSchedule.events, scoreboardData && scoreboardData.events);
+      // Standings computed from real results (range schedule + day-specific overlays + live).
+      var allEvents = mergeEvents(
+        mergeEvents(
+          mergeEvents(fullSchedule && fullSchedule.events, twoDaysAgoData && twoDaysAgoData.events),
+          yesterdayData && yesterdayData.events
+        ),
+        scoreboardData && scoreboardData.events
+      );
       var groups;
       if (allEvents.length) {
         groups = buildGroupsFromResults(allEvents);
@@ -1550,10 +1568,11 @@
                  (standingsData.standings && standingsData.standings.groups) ? standingsData.standings.groups : [];
       }
 
-      // Update schedule cards: full range first (all finished results),
-      // then today's scoreboard so any live match wins.
-      if (fullSchedule && fullSchedule.events)   updateScheduleCards(fullSchedule.events);
-      if (scoreboardData && scoreboardData.events) updateScheduleCards(scoreboardData.events);
+      // Update schedule cards: oldest data first, newest (live) last so live scores always win
+      if (fullSchedule && fullSchedule.events)      updateScheduleCards(fullSchedule.events);
+      if (twoDaysAgoData && twoDaysAgoData.events)  updateScheduleCards(twoDaysAgoData.events);
+      if (yesterdayData && yesterdayData.events)    updateScheduleCards(yesterdayData.events);
+      if (scoreboardData && scoreboardData.events)  updateScheduleCards(scoreboardData.events);
 
       // Inject goal scorers + minutes into finished/live match cards (fire-and-forget)
       if (allEvents.length) updateMatchGoals(allEvents);
