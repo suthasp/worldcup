@@ -1331,15 +1331,10 @@
       var homeDisp = (TC[homeName.toLowerCase()] || {}).n || homeName;
       var awayDisp = (TC[awayName.toLowerCase()] || {}).n || awayName;
 
-      // Find card containing both team names
-      var card = null;
-      for (var i = 0; i < cards.length; i++) {
-        var t = cards[i].textContent.toLowerCase();
-        if (t.indexOf(homeDisp.toLowerCase()) >= 0 && t.indexOf(awayDisp.toLowerCase()) >= 0) {
-          card = cards[i]; break;
-        }
-      }
-      if (!card) return;
+      // Find card + determine which visual side is home
+      var info = findCardAndSides(homeDisp, awayDisp);
+      if (!info) return;
+      var card = info.card;
 
       var scoreBox = card.querySelector('.match-score-box');
       if (!scoreBox) return;
@@ -1347,15 +1342,18 @@
       var completed = ev.status && ev.status.type && ev.status.type.completed;
       var hs = parseInt(homeComp.score) || 0;
       var as_ = parseInt(awayComp.score) || 0;
+      // Display score as left-team – right-team (swap if home is on the right)
+      var ls = info.homeOnLeft ? hs : as_;
+      var rs = info.homeOnLeft ? as_ : hs;
       var detail = (ev.status && ev.status.type && ev.status.type.shortDetail) || 'LIVE';
 
       if (state === 'pre') return; // not started
       if (state === 'in') {
-        scoreBox.innerHTML = '<div class="match-score">' + hs + ' – ' + as_ + '</div>' +
+        scoreBox.innerHTML = '<div class="match-score">' + ls + ' – ' + rs + '</div>' +
           '<div class="match-vs" style="color:#f44;font-weight:700;font-size:.7rem;animation:blink 1s infinite;">● ' + detail + '</div>';
         card.className = card.className.replace(/\bupcoming\b/g, 'today');
       } else if (completed) {
-        scoreBox.innerHTML = '<div class="match-score">' + hs + ' – ' + as_ + '</div><div class="match-vs">จบแล้ว</div>';
+        scoreBox.innerHTML = '<div class="match-score">' + ls + ' – ' + rs + '</div><div class="match-vs">จบแล้ว</div>';
         card.className = card.className.replace(/\btoday\b|\bupcoming\b/g, 'finished');
       }
     });
