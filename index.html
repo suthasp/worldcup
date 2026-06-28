@@ -1340,6 +1340,34 @@
       if (!scoreBox) return;
       var state     = ev.status && ev.status.type && ev.status.type.state;
       var completed = ev.status && ev.status.type && ev.status.type.completed;
+
+      // Inject venue into match-meta (all matches, including upcoming)
+      var vComp = ev.competitions && ev.competitions[0];
+      var ven = vComp && vComp.venue;
+      if (ven && ven.fullName) {
+        var vCity    = (ven.address && ven.address.city) || '';
+        var vCountry = (ven.address && ven.address.country) || '';
+        var vFlag = /canada/i.test(vCountry) ? '🇨🇦'
+                  : /mexico/i.test(vCountry) ? '🇲🇽'
+                  : /united.?states|usa/i.test(vCountry) ? '🇺🇸' : '';
+        var vText = ven.fullName + (vCity ? ', ' + vCity : '') + (vFlag ? ' ' + vFlag : '');
+        var metaEl = card.querySelector('.match-meta');
+        if (metaEl) {
+          var existingVenSpan = null;
+          var mSpans = metaEl.querySelectorAll('span');
+          for (var si = 0; si < mSpans.length; si++) {
+            if (mSpans[si].querySelector('.fa-map-marker-alt')) { existingVenSpan = mSpans[si]; break; }
+          }
+          var venHtml = '<span><i class="fa fa-map-marker-alt"></i>' + vText + '</span>';
+          if (existingVenSpan) { existingVenSpan.outerHTML = venHtml; }
+          else {
+            var gtEl = metaEl.querySelector('.group-tag');
+            if (gtEl) gtEl.insertAdjacentHTML('beforebegin', venHtml);
+            else metaEl.insertAdjacentHTML('afterbegin', venHtml);
+          }
+        }
+      }
+
       var hs = parseInt(homeComp.score) || 0;
       var as_ = parseInt(awayComp.score) || 0;
       // Display score as left-team – right-team (swap if home is on the right)
