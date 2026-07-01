@@ -1652,9 +1652,12 @@
       var aDisp = aTC.n || (ac.team && ac.team.displayName) || '';
       var hFi = hTC.fi||'', aFi = aTC.fi||'';
 
-      var info = nameMap[hDisp.toLowerCase()] || nameMap[aDisp.toLowerCase()]
-               || nameMap[hKey] || nameMap[aKey];
-      if (!info) return;
+      // Both teams must be found AND in the same slot — otherwise it's a group stage match
+      var infoH = nameMap[hDisp.toLowerCase()] || nameMap[hKey];
+      var infoA = nameMap[aDisp.toLowerCase()] || nameMap[aKey];
+      if (!infoH || !infoA) return;
+      if (infoH.side !== infoA.side || infoH.idx !== infoA.idx) return;
+      var info = infoH;
 
       var mc = info.wrapper.querySelector('.ko-mc,.ko-mc-tbd'); if (!mc) return;
       var state     = ev.status && ev.status.type && ev.status.type.state;
