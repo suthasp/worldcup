@@ -1572,6 +1572,140 @@
     });
   }
 
+  // ── Real-time knockout bracket score updater ──
+  function updateKnockoutScores(events) {
+    var koPane = document.getElementById('pane-knockout');
+    if (!koPane) return;
+    var bracketRow = koPane.querySelector('.ko-scroll > div:nth-child(2)');
+    if (!bracketRow) return;
+    var cols = Array.from(bracketRow.children).filter(function(c){ return c.tagName === 'DIV'; });
+    if (cols.length < 9) return;
+    // cols: 0=R32L 1=R16L 2=QFL 3=SFL 4=FINAL 5=SFR 6=QFR 7=R16R 8=R32R
+    var r32L = Array.from(cols[0].children);
+    var r16L = Array.from(cols[1].children);
+    var r16R = Array.from(cols[7].children);
+    var r32R = Array.from(cols[8].children);
+
+    // Build lookup: display name → {side, idx, wrapper}
+    var nameMap = {};
+    function indexSlots(slots, side) {
+      slots.forEach(function(w, i) {
+        var mc = w.querySelector('.ko-mc,.ko-mc-tbd'); if (!mc) return;
+        mc.querySelectorAll('.ko-tn').forEach(function(tn) {
+          nameMap[tn.textContent.trim().toLowerCase()] = {side:side, idx:i, wrapper:w};
+        });
+      });
+    }
+    indexSlots(r32L, 'L');
+    indexSlots(r32R, 'R');
+
+    function flagHtml(fi) {
+      return fi
+        ? '<span class="ko-fp" style="background:none;"><span class="fi fi-'+fi+'" style="width:18px;height:12px;border-radius:2px;display:inline-block;background-size:cover;"></span></span>'
+        : '<span class="ko-fp"></span>';
+    }
+
+    // Push winner into correct R16 slot row (rebuilds mc innerHTML, preserves ko-dt)
+    function pushToR16(side, r32Idx, winFi, winName, otherWrapper) {
+      var slots = side === 'L' ? r16L : r16R;
+      var r16Idx = Math.floor(r32Idx / 2);
+      var isTop  = r32Idx % 2 === 0;
+      var w16 = slots[r16Idx]; if (!w16) return;
+      var mc16 = w16.querySelector('.ko-mc,.ko-mc-tbd'); if (!mc16) return;
+
+      var otherNames = otherWrapper
+        ? Array.from(otherWrapper.querySelectorAll('.ko-tn')).map(function(t){return t.textContent.trim();}).join('/')
+        : '';
+
+      var dt16 = mc16.querySelector('.ko-dt');
+      var dtText = dt16 ? dt16.innerHTML : '';
+      var currentTrs = Array.from(mc16.querySelectorAll('.ko-tr'));
+
+      var winTrHtml = '<div class="ko-tr">' + flagHtml(winFi) + '<span class="ko-tn">' + winName + '</span></div>';
+      var pendingHtml = '<div class="ko-tdr">รอผล ' + (otherNames || 'รอบ 32 ทีม') + '</div>';
+
+      var topHtml, botHtml;
+      if (isTop) {
+        topHtml = winTrHtml;
+        // Preserve existing bottom team-row if already assigned; else show pending
+        botHtml = (currentTrs.length >= 2) ? currentTrs[1].outerHTML : pendingHtml;
+      } else {
+        // Preserve existing top team-row if already assigned; else show pending
+        topHtml = (currentTrs.length >= 1) ? currentTrs[0].outerHTML : pendingHtml;
+        botHtml = winTrHtml;
+      }
+
+      mc16.className = 'ko-mc';
+      mc16.innerHTML = topHtml + '<div class="ko-dv"></div>' + botHtml + '<div class="ko-dt">' + dtText + '</div>';
+    }
+
+    events.forEach(function(ev) {
+      var comp = ev.competitions && ev.competitions[0]; if (!comp) return;
+      var cx = comp.competitors; if (!cx || cx.length < 2) return;
+      var hc = cx.find(function(c){return c.homeAway==='home';}); if (!hc) return;
+      var ac = cx.find(function(c){return c.homeAway==='away';}); if (!ac) return;
+
+      var hKey = ((hc.team && hc.team.displayName)||'').toLowerCase();
+      var aKey = ((ac.team && ac.team.displayName)||'').toLowerCase();
+      var hTC = TC[hKey]||{}, aTC = TC[aKey]||{};
+      var hDisp = hTC.n || (hc.team && hc.team.displayName) || '';
+      var aDisp = aTC.n || (ac.team && ac.team.displayName) || '';
+      var hFi = hTC.fi||'', aFi = aTC.fi||'';
+
+      var info = nameMap[hDisp.toLowerCase()] || nameMap[aDisp.toLowerCase()]
+               || nameMap[hKey] || nameMap[aKey];
+      if (!info) return;
+
+      var mc = info.wrapper.querySelector('.ko-mc,.ko-mc-tbd'); if (!mc) return;
+      var state     = ev.status && ev.status.type && ev.status.type.state;
+      var completed = ev.status && ev.status.type && ev.status.type.completed;
+      var detail    = (ev.status && ev.status.type && ev.status.type.shortDetail) || '';
+      if (state === 'pre') return;
+
+      var hs  = parseInt(hc.score) || 0;
+      var as_ = parseInt(ac.score) || 0;
+      var hWon = false, aWon = false;
+      if (completed) {
+        if (hs > as_) { hWon = true; }
+        else if (as_ > hs) { aWon = true; }
+        else { hWon = hc.winner === true; aWon = ac.winner === true; }
+      }
+
+      // Detect penalty (AET draw with a declared winner)
+      var isPen = completed && hs === as_ && (hWon || aWon);
+      var hPen = '', aPen = '';
+      if (isPen) {
+        var hLs = hc.linescores || [], aLs = ac.linescores || [];
+        // ESPN puts penalty period as last linescore entry beyond normal/ET
+        if (hLs.length > 2) hPen = ' <span class="ko-pen">('+Math.round(hLs[hLs.length-1].value || 0)+')</span>';
+        if (aLs.length > 2) aPen = ' <span class="ko-pen">('+Math.round(aLs[aLs.length-1].value || 0)+')</span>';
+      }
+
+      var dtHtml = (state === 'in')
+        ? '<span class="ko-live">● ' + detail + '</span>'
+        : 'จบแล้ว' + (isPen ? ' · ลูกโทษ' : '');
+
+      mc.className = 'ko-mc';
+      mc.innerHTML =
+        '<div class="ko-tr'+(hWon?' ko-win':'')+'">' + flagHtml(hFi) +
+          '<span class="ko-tn">'+hDisp+'</span>' +
+          '<span class="ko-sc">'+hs+hPen+'</span></div>' +
+        '<div class="ko-dv"></div>' +
+        '<div class="ko-tr'+(aWon?' ko-win':'')+'">' + flagHtml(aFi) +
+          '<span class="ko-tn">'+aDisp+'</span>' +
+          '<span class="ko-sc">'+as_+aPen+'</span></div>' +
+        '<div class="ko-dt">'+dtHtml+'</div>';
+
+      if (completed) {
+        var wFi = hWon ? hFi : aFi;
+        var wName = hWon ? hDisp : aDisp;
+        var pairIdx = info.idx % 2 === 0 ? info.idx + 1 : info.idx - 1;
+        var otherSlots = info.side === 'L' ? r32L : r32R;
+        pushToR16(info.side, info.idx, wFi, wName, otherSlots[pairIdx]);
+      }
+    });
+  }
+
   // ── Real-time standings: computed from live + finished results ──
   async function refreshStandings() {
     var statusEl = document.getElementById('standings-status');
@@ -1590,13 +1724,19 @@
         // Yesterday in ET — catches Group I/H/G MD3 (June 26 ET)
         fetch(BASE + '?dates=' + espnDate(-1)).then(function(r){return r.json();}).catch(function(){return null;}),
         // Today in ET explicitly — catches Group J/K/L MD3 (June 27 ET = June 28 Thai)
-        fetch(BASE + '?dates=' + espnDate(0)).then(function(r){return r.json();}).catch(function(){return null;})
+        fetch(BASE + '?dates=' + espnDate(0)).then(function(r){return r.json();}).catch(function(){return null;}),
+        // Knockout R32 window (June 27 – July 4)
+        fetch(BASE + '?dates=20260627-20260704').then(function(r){return r.json();}).catch(function(){return null;}),
+        // Knockout R16 + QF + SF + Final window (July 5 – July 19)
+        fetch(BASE + '?dates=20260705-20260719').then(function(r){return r.json();}).catch(function(){return null;})
       ]);
       var standingsData   = results[0];
       var scoreboardData  = results[1];
       var fullSchedule    = results[2];
       var yesterdayData   = results[3];
       var todayETData     = results[4];
+      var koR32Data       = results[5];
+      var koLateData      = results[6];
 
       // Merge: range first → yesterday → today ET explicit → live today (wins on conflict)
       var allEvents = mergeEvents(
@@ -1604,6 +1744,11 @@
           mergeEvents(fullSchedule && fullSchedule.events, yesterdayData && yesterdayData.events),
           todayETData && todayETData.events
         ),
+        scoreboardData && scoreboardData.events
+      );
+      // Merge knockout-specific fetches on top (most recent live data wins)
+      var allKoEvents = mergeEvents(
+        mergeEvents(koR32Data && koR32Data.events, koLateData && koLateData.events),
         scoreboardData && scoreboardData.events
       );
       var groups;
@@ -1626,6 +1771,10 @@
 
       // Populate knockout bracket R32 slots with current group leaders
       updateKnockoutBracket(groups);
+
+      // Update knockout bracket with live/final scores and push winners to R16
+      if (allKoEvents.length) updateKnockoutScores(allKoEvents);
+      else if (allEvents.length) updateKnockoutScores(allEvents);
 
       var tbodies = document.querySelectorAll('#pane-groups .standings-table tbody');
       var headers = document.querySelectorAll('#pane-groups .group-title');
