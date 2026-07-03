@@ -182,6 +182,28 @@
     .ko-tr.ko-win .ko-tn, .ko-tr.ko-win .ko-sc { color:var(--wc-gold); font-weight:700; }
     .ko-pen { font-size:.55rem; color:rgba(255,255,255,.45); font-weight:400; }
     .ko-live { color:#f44 !important; }
+
+    /* ── Teams tab ── */
+    .btn-chip { background:rgba(255,255,255,.07); border:1px solid rgba(255,255,255,.15); color:rgba(255,255,255,.65); padding:5px 14px; border-radius:20px; font-size:.8rem; font-weight:600; cursor:pointer; transition:all .2s; white-space:nowrap; }
+    .btn-chip:hover { color:#fff; border-color:rgba(255,255,255,.35); }
+    .btn-chip.active { background:var(--wc-gold); color:#080e1a; border-color:var(--wc-gold); }
+    .team-card { background:var(--card-bg); border:1px solid var(--card-border); border-radius:12px; padding:12px 14px; cursor:pointer; transition:all .2s; display:flex; align-items:center; gap:10px; height:100%; }
+    .team-card:hover { border-color:rgba(240,165,0,.45); transform:translateY(-2px); box-shadow:0 4px 16px rgba(0,0,0,.3); }
+    .tc-name { font-weight:700; font-size:.88rem; line-height:1.3; }
+    .tc-grp { font-size:.7rem; color:var(--wc-silver); margin-top:2px; }
+    /* Roster modal */
+    .roster-modal .modal-content { background:var(--wc-dark); border:1px solid rgba(240,165,0,.25); color:#e8ecf0; border-radius:14px; overflow:hidden; }
+    .roster-modal .modal-header { background:linear-gradient(135deg,var(--wc-navy),var(--wc-blue)); border-bottom:1px solid rgba(255,255,255,.1); padding:14px 18px; }
+    .roster-modal .modal-body { padding:0; max-height:68vh; overflow-y:auto; scrollbar-width:thin; scrollbar-color:rgba(240,165,0,.4) transparent; }
+    .roster-modal .modal-body::-webkit-scrollbar { width:6px; }
+    .roster-modal .modal-body::-webkit-scrollbar-thumb { background:rgba(240,165,0,.4); border-radius:6px; }
+    .pos-section-head { background:rgba(240,165,0,.07); padding:7px 16px; font-size:.7rem; font-weight:700; text-transform:uppercase; letter-spacing:.8px; color:var(--wc-gold); border-bottom:1px solid rgba(240,165,0,.1); position:sticky; top:0; z-index:1; }
+    .player-row { display:flex; align-items:center; gap:10px; padding:9px 16px; border-bottom:1px solid rgba(255,255,255,.05); font-size:.88rem; }
+    .player-row:hover { background:rgba(255,255,255,.03); }
+    .pl-num { width:26px; text-align:center; font-weight:700; font-size:.78rem; color:var(--wc-silver); flex-shrink:0; }
+    .pl-name { font-weight:600; flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    .pl-club { font-size:.73rem; color:rgba(255,255,255,.38); white-space:nowrap; max-width:140px; overflow:hidden; text-overflow:ellipsis; flex-shrink:0; }
+    .pl-age { font-size:.7rem; color:rgba(255,255,255,.3); white-space:nowrap; flex-shrink:0; }
   </style>
 </head>
 <body>
@@ -199,6 +221,7 @@
         <li class="nav-item"><a class="nav-link" href="#" onclick="switchTab('knockout');return false;">รอบน็อคเอาท์</a></li>
         <li class="nav-item"><a class="nav-link" href="#" onclick="switchTab('reports');return false;">รายงาน</a></li>
         <li class="nav-item"><a class="nav-link" href="#" onclick="switchTab('venues');return false;">สนาม</a></li>
+        <li class="nav-item"><a class="nav-link" href="#" onclick="switchTab('teams');return false;">ทีม</a></li>
       </ul>
     </div>
   </div>
@@ -226,6 +249,7 @@
       <li class="nav-item"><button class="nav-link"        onclick="switchTab('knockout')" id="tab-knockout"><i class="fa fa-trophy me-1"></i>รอบน็อคเอาท์</button></li>
       <li class="nav-item"><button class="nav-link"        onclick="switchTab('reports')"  id="tab-reports"><i class="fa fa-ranking-star me-1"></i>รายงาน</button></li>
       <li class="nav-item"><button class="nav-link"        onclick="switchTab('venues')"   id="tab-venues"><i class="fa fa-map-marker-alt me-1"></i>สนาม</button></li>
+      <li class="nav-item"><button class="nav-link"        onclick="switchTab('teams')"    id="tab-teams"><i class="fa fa-users me-1"></i>ทีม</button></li>
     </ul>
   </div>
 </div>
@@ -1141,7 +1165,43 @@
   <p style="font-size:.72rem;color:rgba(255,255,255,.35);margin-top:10px;text-align:center;">ข้อมูลสถิติดึงแบบเรียลไทม์จาก ESPN · นับเฉพาะนัดที่แข่งจบแล้ว</p>
 </div><!-- /pane-reports -->
 
+<!-- ═══ TEAMS ═══ -->
+<div id="pane-teams" style="display:none;">
+  <div class="d-flex align-items-center justify-content-between mb-3 flex-wrap gap-2">
+    <div>
+      <h2 style="font-size:1.4rem;font-weight:800;margin:0;">👥 ข้อมูลทีมและนักเตะ</h2>
+      <div style="font-size:.82rem;color:var(--wc-silver);margin-top:2px;">48 ทีมฟุตบอลโลก 2026 — คลิกที่ทีมเพื่อดูรายชื่อนักเตะ</div>
+    </div>
+  </div>
+  <div class="d-flex gap-2 flex-wrap mb-3" id="team-filter"></div>
+  <div class="row g-2" id="teams-grid"></div>
+</div><!-- /pane-teams -->
+
 </div><!-- /container -->
+
+<!-- Roster Modal -->
+<div class="modal fade roster-modal" id="rosterModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <div class="d-flex align-items-center gap-3">
+          <span id="modal-team-flag" style="font-size:2rem;line-height:1;display:inline-block;"></span>
+          <div>
+            <h5 class="modal-title mb-0" id="modal-team-name" style="font-weight:800;font-size:1.1rem;"></h5>
+            <div id="modal-team-meta" style="font-size:.75rem;color:rgba(255,255,255,.5);margin-top:2px;"></div>
+          </div>
+        </div>
+        <button type="button" class="btn-close btn-close-white ms-auto" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body" id="modal-roster-body">
+        <div style="text-align:center;padding:48px;color:rgba(255,255,255,.4);">⏳ กำลังโหลด…</div>
+      </div>
+      <div style="border-top:1px solid rgba(255,255,255,.07);padding:8px 16px;background:rgba(0,0,0,.2);">
+        <span style="font-size:.68rem;color:rgba(255,255,255,.25);">ข้อมูลจาก ESPN · กด ✕ เพื่อปิด</span>
+      </div>
+    </div>
+  </div>
+</div>
 
 <footer>
   <div class="container">
@@ -1171,7 +1231,7 @@
   window.addEventListener('resize', scaleKnockoutBracket);
 
   function switchTab(name) {
-    ['groups','schedule','knockout','reports','venues'].forEach(function(t) {
+    ['groups','schedule','knockout','reports','venues','teams'].forEach(function(t) {
       document.getElementById('pane-' + t).style.display = (t === name) ? '' : 'none';
       document.getElementById('tab-' + t).classList.toggle('active', t === name);
     });
@@ -1179,6 +1239,7 @@
     if (tabWrap) window.scrollTo({ top: tabWrap.offsetTop - 60, behavior: 'smooth' });
     if (name === 'reports') loadReports(false);
     if (name === 'knockout') setTimeout(scaleKnockoutBracket, 0);
+    if (name === 'teams') buildTeamsPane();
   }
 
   // ── Flag rendering ──────────────────────────────────────────────
@@ -1763,6 +1824,10 @@
                  (standingsData.standings && standingsData.standings.groups) ? standingsData.standings.groups : [];
       }
 
+      // Capture ESPN team IDs for the roster viewer
+      captureTeamIdsFromGroups(groups);
+      if (allEvents.length) captureTeamIds(allEvents);
+
       // Update schedule cards: oldest data first, newest (live) last so live scores always win
       if (fullSchedule && fullSchedule.events)    updateScheduleCards(fullSchedule.events);
       if (yesterdayData && yesterdayData.events)  updateScheduleCards(yesterdayData.events);
@@ -2082,6 +2147,188 @@
       var info = findCardAndSides(homeDisp, awayDisp); if (!info) return;
       renderMatchGoals(info, extractGoals(sum), homeDisp, awayDisp);
     });
+  }
+
+  // ── Teams tab: ID cache + roster viewer ─────────────────────────────────
+  var teamIdMap = {};
+  var GROUPS_LETTERS = 'ABCDEFGHIJKL';
+
+  function captureTeamIds(events) {
+    if (!events) return;
+    events.forEach(function(ev) {
+      var comps = ev.competitions && ev.competitions[0] && ev.competitions[0].competitors;
+      if (!comps) return;
+      comps.forEach(function(c) {
+        var name = c.team && c.team.displayName;
+        var id   = c.team && c.team.id;
+        if (name && id) teamIdMap[name.toLowerCase()] = id;
+      });
+    });
+  }
+
+  function captureTeamIdsFromGroups(groups) {
+    if (!groups) return;
+    groups.forEach(function(g) {
+      var entries = (g.standings && g.standings.entries) || g.entries || [];
+      entries.forEach(function(e) {
+        var t = e.team;
+        if (t && t.id && t.displayName) teamIdMap[t.displayName.toLowerCase()] = t.id;
+      });
+    });
+  }
+
+  function buildTeamsPane() {
+    var grid = document.getElementById('teams-grid');
+    if (!grid || grid.dataset.built) return;
+    grid.dataset.built = '1';
+
+    // De-duplicate TC by fi+group (some teams have multiple keys like aliases)
+    var seen = {};
+    var teamList = [];
+    Object.keys(TC).forEach(function(k) {
+      var t = TC[k];
+      var key = t.fi + ':' + t.g;
+      if (!seen[key]) { seen[key] = true; teamList.push({fi:t.fi, n:t.n, g:t.g, host:t.host||0}); }
+    });
+    teamList.sort(function(a,b){ return a.g - b.g || a.n.localeCompare(b.n); });
+
+    var html = '';
+    teamList.forEach(function(t) {
+      var safeName = t.n.replace(/"/g, '&quot;');
+      html += '<div class="col-6 col-sm-4 col-md-3 col-xl-2 team-card-wrap" data-group="' + t.g + '">'
+        + '<div class="team-card" data-team="' + safeName + '" data-fi="' + t.fi + '" data-grp="' + t.g + '" onclick="openRosterEl(this)">'
+        + '<span class="fi fi-' + t.fi + '" style="font-size:1.8rem;border-radius:3px;flex-shrink:0;display:inline-block;"></span>'
+        + '<div><div class="tc-name">' + t.n + (t.host ? ' <span class="host-badge">HOST</span>' : '') + '</div>'
+        + '<div class="tc-grp">กลุ่ม ' + GROUPS_LETTERS[t.g] + '</div></div>'
+        + '</div></div>';
+    });
+    grid.innerHTML = html;
+
+    var filter = document.getElementById('team-filter');
+    if (filter && !filter.dataset.built) {
+      filter.dataset.built = '1';
+      var fhtml = '<button class="btn-chip active" onclick="filterTeams(\'all\',this)">ทั้งหมด (' + teamList.length + ')</button>';
+      for (var i = 0; i < 12; i++) {
+        fhtml += '<button class="btn-chip" onclick="filterTeams(' + i + ',this)">กลุ่ม ' + GROUPS_LETTERS[i] + '</button>';
+      }
+      filter.innerHTML = fhtml;
+    }
+  }
+
+  function filterTeams(group, btn) {
+    document.querySelectorAll('#team-filter .btn-chip').forEach(function(b){ b.classList.remove('active'); });
+    if (btn) btn.classList.add('active');
+    document.querySelectorAll('.team-card-wrap').forEach(function(w){
+      w.style.display = (group === 'all' || +w.dataset.group === +group) ? '' : 'none';
+    });
+  }
+
+  function openRosterEl(el) {
+    openRoster(el.getAttribute('data-team'), el.getAttribute('data-fi'), +el.getAttribute('data-grp'));
+  }
+
+  var _rosterModal = null;
+
+  function openRoster(teamName, fi, groupIdx) {
+    var flagEl = document.getElementById('modal-team-flag');
+    var nameEl = document.getElementById('modal-team-name');
+    var metaEl = document.getElementById('modal-team-meta');
+    var body   = document.getElementById('modal-roster-body');
+
+    nameEl.textContent = teamName;
+    flagEl.innerHTML = '<span class="fi fi-' + fi + '" style="border-radius:3px;display:inline-block;width:44px;height:30px;background-size:cover;"></span>';
+    var isHost = Object.keys(TC).some(function(k){ return TC[k].n === teamName && TC[k].host; });
+    if (metaEl) metaEl.textContent = 'กลุ่ม ' + (GROUPS_LETTERS[groupIdx] || '?') + (isHost ? ' · เจ้าภาพ' : '');
+    body.innerHTML = '<div style="text-align:center;padding:48px;color:rgba(255,255,255,.45);">⏳ กำลังโหลดข้อมูล…</div>';
+
+    if (!_rosterModal) _rosterModal = new bootstrap.Modal(document.getElementById('rosterModal'));
+    _rosterModal.show();
+
+    // Resolve ESPN team ID: try display name then all TC aliases
+    var espnId = teamIdMap[teamName.toLowerCase()];
+    if (!espnId) {
+      for (var k in TC) {
+        if (TC[k].n === teamName && teamIdMap[k]) { espnId = teamIdMap[k]; break; }
+      }
+    }
+
+    if (!espnId) {
+      body.innerHTML = '<div style="text-align:center;padding:48px 24px;color:rgba(255,255,255,.4);">'
+        + '<div style="font-size:2.5rem;opacity:.25;margin-bottom:12px;">📋</div>'
+        + '<div style="font-size:.95rem;font-weight:600;">ยังไม่มีข้อมูลรายชื่อนักเตะ</div>'
+        + '<div style="font-size:.78rem;margin-top:6px;opacity:.7;">ข้อมูลจะปรากฏหลังจากทีมลงเล่นนัดแรก</div>'
+        + '</div>';
+      return;
+    }
+
+    fetch('https://site.api.espn.com/apis/site/v2/sports/soccer/fifa.world/teams/' + espnId + '/roster')
+      .then(function(r){ return r.json(); })
+      .then(function(data){ renderRoster(body, data); })
+      .catch(function(){
+        body.innerHTML = '<div style="text-align:center;padding:48px;color:rgba(255,255,255,.4);">โหลดข้อมูลไม่สำเร็จ</div>';
+      });
+  }
+
+  function renderRoster(body, data) {
+    var athletes = (data && data.athletes) || [];
+    if (!athletes.length) {
+      body.innerHTML = '<div style="text-align:center;padding:48px;color:rgba(255,255,255,.4);">ไม่มีข้อมูลนักเตะ</div>';
+      return;
+    }
+
+    // ESPN returns grouped [{position,displayName,items:[...]}] or flat [{displayName,jersey,...}]
+    var groups = [];
+    if (athletes[0] && athletes[0].items) {
+      groups = athletes;
+    } else {
+      var posMap = {}, posOrder = [];
+      athletes.forEach(function(a) {
+        var abbr = (a.position && (a.position.abbreviation || a.position.name)) || 'OTHER';
+        if (abbr === 'FWD') abbr = 'FW';
+        if (!posMap[abbr]) {
+          posMap[abbr] = {position:abbr, displayName:(a.position && a.position.displayName)||abbr, items:[]};
+          posOrder.push(abbr);
+        }
+        posMap[abbr].items.push(a);
+      });
+      ['GK','DEF','MID','FW'].forEach(function(p){ if (posMap[p]) groups.push(posMap[p]); });
+      posOrder.forEach(function(p){ if (['GK','DEF','MID','FW'].indexOf(p) === -1 && posMap[p]) groups.push(posMap[p]); });
+    }
+
+    var POS_TH = {
+      GK:'ผู้รักษาประตู', Goalkeeper:'ผู้รักษาประตู',
+      DEF:'กองหลัง', Defender:'กองหลัง',
+      MID:'กองกลาง', Midfielder:'กองกลาง',
+      FW:'กองหน้า', FWD:'กองหน้า', Forward:'กองหน้า'
+    };
+    var teamId = data.team && data.team.id;
+    var html = '';
+
+    groups.forEach(function(grp) {
+      var items = (grp.items || []).slice().sort(function(a,b){ return (+a.jersey||99) - (+b.jersey||99); });
+      if (!items.length) return;
+      var posLabel = POS_TH[grp.position] || POS_TH[grp.displayName] || grp.displayName || grp.position || '';
+      html += '<div class="pos-section-head">' + posLabel
+        + ' <span style="font-weight:400;opacity:.55;font-size:.62rem;">(' + items.length + ' คน)</span></div>';
+      items.forEach(function(a) {
+        var club = '';
+        if (a.club && a.club.name) club = a.club.name;
+        else if (a.club && typeof a.club === 'string') club = a.club;
+        else if (a.teams) {
+          var ct = (a.teams || []).find(function(t){ return t.id && String(t.id) !== String(teamId); });
+          if (ct) club = ct.shortDisplayName || ct.displayName || ct.abbreviation || '';
+        }
+        var ageStr = a.age ? a.age + ' ปี' : '';
+        html += '<div class="player-row">'
+          + '<span class="pl-num">' + (a.jersey || '—') + '</span>'
+          + '<span class="pl-name">' + escH(a.displayName || a.fullName || '') + '</span>'
+          + (ageStr ? '<span class="pl-age">' + ageStr + '</span>' : '')
+          + (club ? '<span class="pl-club">' + escH(club) + '</span>' : '')
+          + '</div>';
+      });
+    });
+
+    body.innerHTML = html || '<div style="text-align:center;padding:48px;color:rgba(255,255,255,.4);">ไม่มีข้อมูลนักเตะ</div>';
   }
 
   applyFlags();
