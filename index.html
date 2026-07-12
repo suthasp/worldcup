@@ -1688,6 +1688,7 @@
       var isTop  = r16Idx % 2 === 0;
       var wQF = slots[qfIdx]; if (!wQF) return;
       var mcQF = wQF.querySelector('.ko-mc,.ko-mc-tbd'); if (!mcQF) return;
+      if (mcQF.querySelector('.ko-sc')) return; // QF result already filled in static HTML — don't overwrite
       var otherNames = otherWrapper
         ? Array.from(otherWrapper.querySelectorAll('.ko-tn')).map(function(t){return t.textContent.trim();}).join('/')
         : '';
