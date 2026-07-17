@@ -1440,7 +1440,8 @@
       var rs = info.homeOnLeft ? as_ : hs;
       var detail = (ev.status && ev.status.type && ev.status.type.shortDetail) || 'LIVE';
 
-      if (state === 'pre') return; // not started
+      if (state === 'pre') return;
+      if (mc.querySelector('.ko-sc')) return; // result already filled in static HTML (incl. penalty scores) — don't overwrite // not started
       if (state === 'in') {
         scoreBox.innerHTML = '<div class="match-score">' + ls + ' – ' + rs + '</div>' +
           '<div class="match-vs" style="color:#f44;font-weight:700;font-size:.7rem;animation:blink 1s infinite;">● ' + detail + '</div>';
@@ -1716,6 +1717,7 @@
       var isTop  = r32Idx % 2 === 0;
       var w16 = slots[r16Idx]; if (!w16) return;
       var mc16 = w16.querySelector('.ko-mc,.ko-mc-tbd'); if (!mc16) return;
+      if (mc16.querySelector('.ko-sc')) return; // R16 result already filled in static HTML — don't overwrite
 
       var otherNames = otherWrapper
         ? Array.from(otherWrapper.querySelectorAll('.ko-tn')).map(function(t){return t.textContent.trim();}).join('/')
@@ -1768,6 +1770,7 @@
       var completed = ev.status && ev.status.type && ev.status.type.completed;
       var detail    = (ev.status && ev.status.type && ev.status.type.shortDetail) || '';
       if (state === 'pre') return;
+      if (mc.querySelector('.ko-sc')) return; // result already filled in static HTML (incl. penalty scores) — don't overwrite
 
       var hs  = parseInt(hc.score) || 0;
       var as_ = parseInt(ac.score) || 0;
@@ -1834,6 +1837,7 @@
       var completed = ev.status && ev.status.type && ev.status.type.completed;
       var detail    = (ev.status && ev.status.type && ev.status.type.shortDetail) || '';
       if (state === 'pre') return;
+      if (mc.querySelector('.ko-sc')) return; // result already filled in static HTML (incl. penalty scores) — don't overwrite
       var hs  = parseInt(hc.score) || 0;
       var as_ = parseInt(ac.score) || 0;
       var hWon = false, aWon = false;
